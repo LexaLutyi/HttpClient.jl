@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+HttpClient = "a8bcf8b1-64b8-41f7-8d00-5e694f9aa795"

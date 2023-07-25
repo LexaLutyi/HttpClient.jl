@@ -1,0 +1,13 @@
+name = "HttpClient"
+uuid = "a8bcf8b1-64b8-41f7-8d00-5e694f9aa795"
+authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
