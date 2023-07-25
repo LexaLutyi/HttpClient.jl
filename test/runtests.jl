@@ -2,5 +2,6 @@ using HttpClient
 using Test
 
 @testset "HttpClient.jl" begin
-    # Write your tests here.
+    t = @ccall clock()::Int32
+    @show t
 end
