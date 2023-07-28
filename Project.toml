@@ -3,6 +3,9 @@ uuid = "a8bcf8b1-64b8-41f7-8d00-5e694f9aa795"
 authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+libcurl_jll = "21bba74e-77d2-57ad-a443-e89d5f4545f6"
+
 [compat]
 julia = "1"
 
