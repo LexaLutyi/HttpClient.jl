@@ -4,6 +4,7 @@ authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
 [deps]
+BinaryBuilder = "12aac903-9f7c-5d81-afc2-d9565ea332ae"
 libcurl_jll = "21bba74e-77d2-57ad-a443-e89d5f4545f6"
 
 [compat]

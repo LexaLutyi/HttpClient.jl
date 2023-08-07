@@ -12,11 +12,28 @@ sources = [
 
 # Bash recipe for building across all platforms
 script = raw"""
-cd $WORKSPACE/srcdir
-./curl-8.2.1/configure --prefix=${prefix} --build=${MACHTYPE} --host=${target} --without-ssl
-make
-make install
-exit
+    cd $WORKSPACE/srcdir
+
+    # Holy crow we really configure the bitlets out of this thing
+    FLAGS=(
+        # Disable....almost everything
+        --without-gnutls
+        --without-libidn2 --without-librtmp
+        --without-nss --without-libpsl
+        --disable-ares --disable-manual
+        --disable-ldap --disable-ldaps --without-zsh-functions-dir
+        --disable-static --without-libgsasl
+        --without-brotli
+
+        # A few things we actually enable
+        --with-libssh2=${prefix} --with-zlib=${prefix} --with-nghttp2=${prefix}
+        --enable-versioned-symbols
+    )
+
+    ./curl-8.2.1/configure --prefix=${prefix} --build=${MACHTYPE} --host=${target} --without-ssl
+    make
+    make install
+    exit
 """
 
 # These are the platforms we will build for by default, unless further
@@ -45,8 +62,16 @@ products = [
 ]
 
 # Dependencies that must be installed before this package can be built
-dependencies = Dependency[
+dependencies = [
+    Dependency("LibSSH2_jll"),
+    Dependency("Zlib_jll"),
+    Dependency("nghttp2_jll"),
+    # Note that while we unconditionally list MbedTLS as a dependency,
+    # we default to schannel/SecureTransport on Windows/MacOS.
+    Dependency("MbedTLS_jll"; compat="~2.28.0", platforms=filter(p->Sys.islinux(p) || Sys.isfreebsd(p), platforms)),
+    # Dependency("Kerberos_krb5_jll"; platforms=filter(p->Sys.islinux(p) || Sys.isfreebsd(p), platforms)),
+    BuildDependency("LLVMCompilerRT_jll",platforms=[Platform("x86_64", "linux"; sanitize="memory")]),
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
-build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies; julia_compat="1.6")
+build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies; julia_compat="1.8")

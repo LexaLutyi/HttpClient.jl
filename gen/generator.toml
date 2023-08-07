@@ -1,0 +1,17 @@
+[general]
+library_name = "mylibcurl"
+output_filepath = "./MyLibCURL.jl"
+module_name = "MyLibCURL"
+# jll_pkg_name = "libcurl_jll"
+
+# identifiers that starts with the string listed in this entry will be exported.
+# export_symbol_prefixes = ["CX", "clang_"]
+
+# the code in the following file will be copy-pasted to `output_file_path` before the generated code.
+# this is often used for applying custom patches, e.g. adding missing definitions.
+# prologue_file_path = "./prologue.jl"
+prologue_file_path = ""
+
+# the code in the following file will be copy-pasted to `output_file_path` after the generated code.
+# this is often used for applying custom patches.
+epilogue_file_path = ""

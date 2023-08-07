@@ -1,0 +1,3 @@
+[deps]
+Clang = "40e3b903-d033-50b4-a0cc-940c62c95e31"
+libcurl_jll = "21bba74e-77d2-57ad-a443-e89d5f4545f6"
