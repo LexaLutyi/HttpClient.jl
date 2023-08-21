@@ -19,16 +19,16 @@ function name_and_value(header)
 end
 
 
-function extract_headers(curl)
+function get_headers(curl)
     c_headers = extract_c_headers(curl)
     c_headers .|> name_and_value |> Dict
 end
 
 
-function add_headers(curl, headers)
+function set_headers(curl, headers)
     list = Ptr{Cvoid}(0)
     for (key, value) in headers
         list = curl_slist_append(list, "$(key): $(value)")
     end
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list)
+    @curlok curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list)
 end
