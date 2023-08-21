@@ -8,9 +8,10 @@ function curl_write_cb(curlbuf::Ptr{Cvoid}, s::Csize_t, n::Csize_t, p_ctxt::Ptr{
 end
 
 
-function get(url)
+function get(url; headers=Dict{String, String}(), query=Dict{String, String}())
     curl = curl_easy_init()
 
+    # full_url = add_query(url, query)
     curl_easy_setopt(curl, CURLOPT_URL, url)
     #! curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
 
@@ -19,6 +20,8 @@ function get(url)
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, c_curl_write_cb)
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, response)
+
+    add_headers(curl, headers)
 
     res = curl_easy_perform(curl)
     if res != CURLE_OK

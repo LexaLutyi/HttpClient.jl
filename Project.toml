@@ -4,7 +4,7 @@ authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
 [deps]
-LibCURL = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+LibCURL2 = "a9341e5c-07f0-4893-8fea-80ee6f4ebcc7"
 LibCURL_jll = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
 
 [compat]
