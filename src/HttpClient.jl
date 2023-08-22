@@ -12,5 +12,6 @@ include("timeout.jl")
 include("data.jl")
 include("get.jl")
 include("post.jl")
+include("delete.jl")
 
 end

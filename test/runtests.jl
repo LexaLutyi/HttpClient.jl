@@ -1,6 +1,10 @@
 using HttpClient
-using LibCURL2
+# using LibCURL2
 using Test
+using JSON
+
+include("reqres_tests.jl")
+
 
 @testset "Get" begin
 
@@ -82,24 +86,6 @@ end
     @test request1.response == request2.response
 end
 
-# ! long and unstable results
-# @testset "Get with query: httpbin.org" begin
-#     url = "https://httpbin.org/get?echo=%E4%BD%A0%E5%A5%BD%E5%97%8E"
-#     headers = Dict(
-#         "Accept" => "application/json",
-#         "User-Agent" => "http-julia"
-#     )
-#     request = HttpClient.get(url; headers)
-#     @test request.headers["Content-Type"] == "application/json"
-
-#     url2 = "https://httpbin.org/get"
-#     query = Dict(
-#         "echo" => "你好嗎"
-#     )
-#     request2 = HttpClient.get(url2; headers, query)
-#     @test request == request2
-# end
-
 
 @testset "Interface" begin
     interface = "0.0.0.0"
@@ -110,17 +96,45 @@ end
 end
 
 @testset "Timeout" begin
-    url = "https://httpbin.org/get"
-    timeout = 1
-    request_time = @elapsed try
-        request = HttpClient.get(url; timeout)
-    catch e
-        if e != ErrorException("Timeout was reached")
-            error(e)
-        end
-    end
-    @test request_time <= timeout + 1
+    reqres_test = reqres_test_get["get_delayed_response"]
+    @test_throws "Timeout was reached" HttpClient.get(
+        reqres_test.url;
+        reqres_test.headers,
+        reqres_test.query,
+        reqres_test.interface,
+        timeout = 1,
+        retries = 0
+    )
+
+    request = HttpClient.get(
+        reqres_test.url;
+        reqres_test.headers,
+        reqres_test.query,
+        reqres_test.interface,
+        timeout = 4,
+        retries = 0
+    )
+    @test request.status == reqres_test.status
+    @test JSON.parse(request.response) == JSON.parse(reqres_test.response)
 end
+
+
+for (name, reqres_test) in reqres_test_get
+    @testset "$name" begin
+        request = HttpClient.get(
+            reqres_test.url;
+            reqres_test.headers,
+            reqres_test.query,
+            reqres_test.interface,
+            reqres_test.timeout,
+            reqres_test.retries
+        )
+
+        @test request.status == reqres_test.status
+        @test JSON.parse(request.response) == JSON.parse(reqres_test.response)
+    end
+end
+
 
 # @testset "Retries" begin
 #     url = "https://httpbin.org/get"
@@ -172,4 +186,62 @@ system
     @test request.response == databases
 end
 
+for (name, reqres_test) in reqres_test_post
+    @testset "$name" begin
+        request = HttpClient.post(
+            reqres_test.url;
+            reqres_test.headers,
+            reqres_test.query,
+            reqres_test.interface,
+            reqres_test.timeout,
+            reqres_test.retries,
+            data = reqres_test.body
+        )
+
+        @test request.status == reqres_test.status
+        if name != "post_create"
+            @test JSON.parse(request.response) == JSON.parse(reqres_test.response)
+        end
+    end
+end
+
 end # Post
+
+
+@testset "Delete" begin
+
+    @testset "reqbin.com" begin
+        url = "https://reqbin.com/echo/delete/json"
+        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
+        request = HttpClient.delete(url; headers)
+        @test request.status == 200
+        @test request.response == "{\"success\":\"true\"}\n"
+    end
+
+    @testset "play.clickhouse.com" begin
+        url = "https://play.clickhouse.com/"
+        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
+        request = HttpClient.delete(url; headers, what = "play")
+        @test request.status == 501
+        @test request.response == ""
+    end
+
+    for (name, reqres_test) in reqres_test_delete
+        @testset "$name" begin
+            request = HttpClient.delete(
+                reqres_test.url;
+                reqres_test.headers,
+                reqres_test.query,
+                reqres_test.interface,
+                reqres_test.timeout,
+                reqres_test.retries,
+                what = reqres_test.what_to_delete
+            )
+    
+            @test request.status == reqres_test.status
+            @test request.response == reqres_test.response
+        end
+    end
+
+end # Delete
+
