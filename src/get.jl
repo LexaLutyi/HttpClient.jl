@@ -24,6 +24,11 @@ function get_http_code(curl)
 end
 
 
+"""
+    get(url; headers, query, interface, timeout, retires)
+
+Perform http get request and return `Request` object.
+"""
 function get(url; 
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 
