@@ -1,5 +1,6 @@
 function set_delete(curl, what)
-    @curlok curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE $(what)")
+    request = strip("DELETE $(what)")
+    @curlok curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request)
 end
 
 
