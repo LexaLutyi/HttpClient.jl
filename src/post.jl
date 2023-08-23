@@ -19,6 +19,7 @@ function post(url;
     set_interface(curl, interface)
     set_timeout(curl, timeout)
     set_data(curl, data)
+    set_ssl(curl)
 
     retry(
         curl -> HttpClient.@curlok(curl_easy_perform(curl)); 

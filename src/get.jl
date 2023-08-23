@@ -48,6 +48,7 @@ function get(url;
     set_headers(curl, headers)
     set_interface(curl, interface)
     set_timeout(curl, timeout)
+    set_ssl(curl)
 
     retry(
         curl -> HttpClient.@curlok(curl_easy_perform(curl)); 

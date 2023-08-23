@@ -24,6 +24,7 @@ function delete(url;
     set_interface(curl, interface)
     set_timeout(curl, timeout)
     set_delete(curl, what)
+    set_ssl(curl)
 
     retry(
         curl -> HttpClient.@curlok(curl_easy_perform(curl)); 

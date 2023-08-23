@@ -10,6 +10,8 @@ include("query.jl")
 include("interface.jl")
 include("timeout.jl")
 include("data.jl")
+include("ssl.jl")
+
 include("get.jl")
 include("post.jl")
 include("delete.jl")

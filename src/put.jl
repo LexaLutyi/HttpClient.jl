@@ -25,6 +25,7 @@ function put(url;
     set_timeout(curl, timeout)
     set_data(curl, data)
     set_put(curl)
+    set_ssl(curl)
 
     retry(
         curl -> HttpClient.@curlok(curl_easy_perform(curl)); 
