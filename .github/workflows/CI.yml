@@ -50,6 +50,7 @@ jobs:
           julia --project=docs/ -e '
             using Pkg
             pkg"registry add https://github.com/LexaLutyi/MyJuliaRegistry.git"
+            pkg"registry add General https://github.com/JuliaRegistries/General.git"
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
       - uses: julia-actions/julia-buildpkg@v1
