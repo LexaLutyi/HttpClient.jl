@@ -5,6 +5,16 @@ using JSON
 include("reqres_tests.jl")
 
 
+function caseless_key_check(dict, key, value)
+    for (k, v) in dict
+        if lowercase(k) == lowercase(key) && lowercase(v) == lowercase(value)
+            return true
+        end
+    end
+    return false
+end
+
+
 @testset "Get" begin
 
 @testset "200" begin
@@ -17,7 +27,8 @@ include("reqres_tests.jl")
 
     @test request.status == 200
 
-    @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
+    # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
+    @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
 
     @test url == url_bkp
 end
@@ -33,7 +44,8 @@ end
 
     @test request.status == 404
 
-    @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
+    # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
+    @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
 
     @test url == url_bkp
 end
@@ -67,10 +79,12 @@ end
         "User-Agent" => "http-julia"
     )
     request = HttpClient.get(url; headers)
-    @test request.headers["Content-Type"] == "application/json"
+    @test caseless_key_check(request.headers, "Content-Type", "application/json")
+    # @test request.headers["Content-Type"] == "application/json"
 
     request = HttpClient.get(url)
-    @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
+    @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
+    # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
 end
 
 
@@ -162,8 +176,10 @@ end # Get
     request = HttpClient.post(url; headers, data)
     @test request.status == 200
     @test request.response == "{\"success\":\"true\"}\n"
-    @test request.headers["Content-Type"] == "application/json"
-    @test request.headers["Content-Length"] == "19"
+    # @test request.headers["Content-Type"] == "application/json"
+    @test caseless_key_check(request.headers, "Content-Type", "application/json")
+    # @test request.headers["Content-Length"] == "19"
+    @test caseless_key_check(request.headers, "Content-Length", "19")
 end
 
 @testset "clickhouse" begin
