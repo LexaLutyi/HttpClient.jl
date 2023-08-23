@@ -282,3 +282,18 @@ post_login_unsuccessful_body = """
     "email": "peter@klaven"
 }
 """
+
+put_update_response = """
+{
+    "name": "morpheus",
+    "job": "zion resident",
+    "updatedAt": "2023-08-23T10:09:27.703Z"
+}
+"""
+
+put_update_body = """
+{
+    "name": "morpheus",
+    "job": "zion resident"
+}
+"""

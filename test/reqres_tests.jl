@@ -131,3 +131,13 @@ reqres_test_delete["delete_user"] = ReqresTest(;
     status = 204,
     response = ""
 )
+
+reqres_test_put = Dict{String, ReqresTest}()
+
+reqres_test_put["put_update"] = ReqresTest(;
+    url = "https://reqres.in/api/users/2",
+    headers,
+    status = 200,
+    response = put_update_response,
+    body = put_update_body
+)

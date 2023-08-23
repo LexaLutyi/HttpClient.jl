@@ -13,5 +13,6 @@ include("data.jl")
 include("get.jl")
 include("post.jl")
 include("delete.jl")
+include("put.jl")
 
 end
