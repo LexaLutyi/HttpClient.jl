@@ -149,6 +149,14 @@ for (name, reqres_test) in reqres_test_get
 end
 
 
+@testset "Large response" begin
+    url = "https://play.clickhouse.com/play"
+    request = HttpClient.get(url)
+    @test length(request.response) > 10000
+    @test request.status == 200
+end
+
+
 # @testset "Retries" begin
 #     url = "https://httpbin.org/get"
 #     timeout = 1

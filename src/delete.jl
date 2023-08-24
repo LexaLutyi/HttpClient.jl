@@ -33,7 +33,7 @@ function delete(url;
     )(curl)
 
     http_code = get_http_code(curl)
-    response_string = GC.@preserve response unsafe_string(pointer(response))
+    response_string = response_as_string(response)
     headers = get_headers(curl)
 
     # ! How to test this?

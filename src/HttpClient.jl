@@ -5,6 +5,8 @@ using LibCURL_jll
 
 include("curl_error.jl")
 include("request.jl")
+include("response.jl")
+
 include("header.jl")
 include("query.jl")
 include("interface.jl")
