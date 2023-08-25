@@ -3,10 +3,33 @@ function set_put(curl)
 end
 
 
+"""
+    put(url; headers, query, interface, timeout, retires, body) -> Request
+
+Perform http put request and return [`Request`](@ref) object.
+
+# Example
+
+```julia
+url = "https://reqres.in/api/users/2"
+headers = ["User-Agent" => "http-julia", "Content-Type" => "application/json"]
+body = \"\"\"{
+    "name": "morpheus",
+    "job": "zion resident"
+}\"\"\"
+request = HttpClient.put(url; headers, body)
+
+@test request.status == 200
+```
+```julia-repl
+julia> print(request.response)
+{"name":"morpheus","job":"zion resident","updatedAt":"2023-08-25T12:17:32.283Z"}
+```
+"""
 function put(url; 
     headers = Dict{String, String}(), 
     query = Dict{String, String}(),
-    data = "", 
+    body = "", 
     interface = "", 
     timeout = 0, 
     retries = 0
@@ -23,7 +46,7 @@ function put(url;
     set_headers(curl, headers)
     set_interface(curl, interface)
     set_timeout(curl, timeout)
-    set_data(curl, data)
+    set_data(curl, body)
     set_put(curl)
     set_ssl(curl)
 

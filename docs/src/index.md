@@ -12,8 +12,3 @@ Documentation for [HttpClient](https://github.com/LexaLutyi/HttpClient.jl).
 ```@autodocs
 Modules = [HttpClient]
 ```
-
-```@example
-using HttpClient
-HttpClient.get("https://example.com")
-```

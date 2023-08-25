@@ -4,6 +4,21 @@ function set_delete(curl, what)
 end
 
 
+"""
+    delete(url; headers, query, interface, timeout, retires, what) -> Request
+
+Perform http delete request and return [`Request`](@ref) object.
+
+# Example
+```julia
+url = "https://reqres.in/api/users/2"
+headers = ["User-Agent" => "http-julia", "Content-Type" => "application/json"]
+request = HttpClient.post(url; headers)
+
+@test request.status == 204
+@test request.response == ""
+```
+"""
 function delete(url;
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 

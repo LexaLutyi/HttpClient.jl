@@ -6,13 +6,19 @@ end
 
 
 """
-    get(url; headers, query, interface, timeout, retires)
+    get(url; headers, query, interface, timeout, retires) -> Request
 
-Perform http get request and return `Request` object.
+Perform http get request and return [`Request`](@ref) object.
 
 # Example
-```jldoctest
-
+```julia
+headers = [
+    "Content-Type" => "application/json", 
+    "User-Agent" => "http-julia"
+]
+request = HttpClient.get("https://reqbin.com/echo/get/json"; headers)
+@test request.status == 200
+@test request.response == "{\\"success\\":\\"true\\"}\\n"
 ```
 """
 function get(url; 

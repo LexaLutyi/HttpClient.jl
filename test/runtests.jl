@@ -173,7 +173,7 @@ end # Get
 @testset "200" begin
     url = "https://reqbin.com/echo/post/json"
     headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
-    data = """
+    body = """
     {
         "Id": 12345,
         "Customer": "John Smith",
@@ -181,7 +181,7 @@ end # Get
         "Price": 10.00
     }
     """
-    request = HttpClient.post(url; headers, data)
+    request = HttpClient.post(url; headers, body)
     @test request.status == 200
     @test request.response == "{\"success\":\"true\"}\n"
     # @test request.headers["Content-Type"] == "application/json"
@@ -194,7 +194,7 @@ end
     url = "https://play.clickhouse.com/"
     query = Dict("user" => "explorer")
     headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
-    data = "show databases"
+    body = "show databases"
 
     databases = """
 blogs
@@ -204,7 +204,7 @@ mgbench
 system
 """
 
-    request = HttpClient.post(url; query, headers, data)
+    request = HttpClient.post(url; query, headers, body)
     @test request.status == 200
     @test request.response == databases
 end
@@ -218,7 +218,7 @@ for (name, reqres_test) in reqres_test_post
             reqres_test.interface,
             reqres_test.timeout,
             reqres_test.retries,
-            data = reqres_test.body
+            body = reqres_test.body
         )
 
         @test request.status == reqres_test.status
@@ -280,7 +280,7 @@ end # Delete
                 reqres_test.interface,
                 reqres_test.timeout,
                 reqres_test.retries,
-                data = reqres_test.body
+                body = reqres_test.body
             )
     
             @test request.status == reqres_test.status

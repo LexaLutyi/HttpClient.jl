@@ -19,8 +19,9 @@ end
 
 # setup the callback function to recv data
 function curl_write_cb(curlbuf::Ptr{Cvoid}, s::Csize_t, n::Csize_t, p_ctxt::Ptr{Cvoid})
-    sz = s * n
     response = unsafe_pointer_to_objref(p_ctxt)
+
+    sz = s * n
     if sz + response.len + 1 > response.allocated
         response.allocated += CURL_MAX_WRITE_SIZE
         response.txt = Libc.realloc(response.txt, response.allocated)
