@@ -1,53 +1,73 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · HttpClient.jl</title><script data-outdated-warner src="assets/warner.js"></script><link rel="canonical" href="https://LexaLutyi.github.io/HttpClient.jl/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href>HttpClient.jl</a></span></div><form class="docs-search" action="search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Home</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Home</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Home</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LexaLutyi/HttpClient.jl/blob/main/docs/src/index.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="HttpClient"><a class="docs-heading-anchor" href="#HttpClient">HttpClient</a><a id="HttpClient-1"></a><a class="docs-heading-anchor-permalink" href="#HttpClient" title="Permalink"></a></h1><p>Documentation for <a href="https://github.com/LexaLutyi/HttpClient.jl">HttpClient</a>.</p><ul><li><a href="#HttpClient.get-Tuple{Any}"><code>HttpClient.get</code></a></li></ul><article class="docstring"><header><a class="docstring-binding" id="HttpClient.get-Tuple{Any}" href="#HttpClient.get-Tuple{Any}"><code>HttpClient.get</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">get(url; headers, query, interface, timeout, retires)</code></pre><p>Perform http get request and return <code>Request</code> object.</p><p><strong>Example</strong></p><pre><code class="language-julia hljs"></code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/6a541a82473868b8e67f7a3570b95cfead98dbc3/src/get.jl#L8-L17">source</a></section></article><pre><code class="language-julia hljs">using HttpClient
-HttpClient.get(&quot;https://example.com&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">HttpClient.Request
-  status = 200
-  response = &quot;&quot;&quot;&lt;!doctype html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;title&gt;Example Domain&lt;/title&gt;
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · HttpClient.jl</title><script data-outdated-warner src="assets/warner.js"></script><link rel="canonical" href="https://LexaLutyi.github.io/HttpClient.jl/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href>HttpClient.jl</a></span></div><form class="docs-search" action="search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li class="is-active"><a class="tocitem" href>Home</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Home</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Home</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LexaLutyi/HttpClient.jl/blob/main/docs/src/index.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="HttpClient"><a class="docs-heading-anchor" href="#HttpClient">HttpClient</a><a id="HttpClient-1"></a><a class="docs-heading-anchor-permalink" href="#HttpClient" title="Permalink"></a></h1><p>Documentation for <a href="https://github.com/LexaLutyi/HttpClient.jl">HttpClient</a>.</p><ul><li><a href="#HttpClient.Request"><code>HttpClient.Request</code></a></li><li><a href="#HttpClient.delete-Tuple{Any}"><code>HttpClient.delete</code></a></li><li><a href="#HttpClient.get-Tuple{Any}"><code>HttpClient.get</code></a></li><li><a href="#HttpClient.post-Tuple{Any}"><code>HttpClient.post</code></a></li><li><a href="#HttpClient.put-Tuple{Any}"><code>HttpClient.put</code></a></li></ul><article class="docstring"><header><a class="docstring-binding" id="HttpClient.Request" href="#HttpClient.Request"><code>HttpClient.Request</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">struct Request
+    response::String
+    status::Int
+    headers::Dict{String, String}
+end</code></pre><p>Store status, response and headers of successful http request.</p><p>Example</p><pre><code class="language-julia-repl hljs">julia&gt; request = HttpClient.get(&quot;https://example.com&quot;);
 
-    &lt;meta charset=&quot;utf-8&quot; /&gt;
-    &lt;meta http-equiv=&quot;Content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
-    &lt;style type=&quot;text/css&quot;&gt;
-    body {
-        background-color: #f0f0f2;
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, system-ui, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
-        
-    }
-    div {
-        width: 600px;
-        margin: 5em auto;
-        padding: 2em;
-        background-color: #fdfdff;
-        border-radius: 0.5em;
-        box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
-    }
-    a:link, a:visited {
-        color: #38488f;
-        text-decoration: none;
-    }
-    @media (max-width: 700px) {
-        div {
-            margin: 0 auto;
-            width: auto;
-        }
-    }
-    &lt;/style&gt;    
-&lt;/head&gt;
+julia&gt; request.status
+200
+julia&gt; typeof(request.response)
+String
+julia&gt; length(request.response)
+1256
+julia&gt; request.headers
+Dict{String, String} with 11 entries:
+  &quot;Expires&quot;        =&gt; &quot;Fri, 01 Sep 2023 13:15:35 GMT&quot;
+  &quot;Etag&quot;           =&gt; &quot;&quot;3147526947+gzip+ident&quot;&quot;
+  &quot;Content-Length&quot; =&gt; &quot;1256&quot;
+  &quot;Last-Modified&quot;  =&gt; &quot;Thu, 17 Oct 2019 07:18:26 GMT&quot;
+  &quot;Date&quot;           =&gt; &quot;Fri, 25 Aug 2023 13:15:35 GMT&quot;
+  &quot;Age&quot;            =&gt; &quot;215050&quot;
+  &quot;Vary&quot;           =&gt; &quot;Accept-Encoding&quot;
+  &quot;X-Cache&quot;        =&gt; &quot;HIT&quot;
+  &quot;Cache-Control&quot;  =&gt; &quot;max-age=604800&quot;
+  &quot;Content-Type&quot;   =&gt; &quot;text/html; charset=UTF-8&quot;
+  &quot;Server&quot;         =&gt; &quot;ECS (dcb/7F83)&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/977c65c6a12fd7d5e6aba0fdfecab2a7c475138a/src/request.jl#L1-L35">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="HttpClient.delete-Tuple{Any}" href="#HttpClient.delete-Tuple{Any}"><code>HttpClient.delete</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">delete(url; headers, query, interface, timeout, retires, what) -&gt; Request</code></pre><p>Perform http delete request and return <a href="#HttpClient.Request"><code>Request</code></a> object.</p><p><strong>Example</strong></p><pre><code class="language-julia hljs">url = &quot;https://reqres.in/api/users/2&quot;
+headers = [&quot;User-Agent&quot; =&gt; &quot;http-julia&quot;, &quot;Content-Type&quot; =&gt; &quot;application/json&quot;]
+request = HttpClient.post(url; headers)
 
-&lt;body&gt;
-&lt;div&gt;
-    &lt;h1&gt;Example Domain&lt;/h1&gt;
-    &lt;p&gt;This domain is for use in illustrative examples in documents. You may use this
-    domain in literature without prior coordination or asking for permission.&lt;/p&gt;
-    &lt;p&gt;&lt;a href=&quot;https://www.iana.org/domains/example&quot;&gt;More information...&lt;/a&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-&quot;&quot;&quot;
-  headers = Dict(&quot;x-cache&quot; =&gt; &quot;HIT&quot;, &quot;cache-control&quot; =&gt; &quot;max-age=604800&quot;, &quot;etag&quot; =&gt; &quot;\&quot;3147526947\&quot;&quot;, &quot;server&quot; =&gt; &quot;ECS (dab/4B67)&quot;, &quot;content-type&quot; =&gt; &quot;text/html; charset=UTF-8&quot;, &quot;date&quot; =&gt; &quot;Thu, 24 Aug 2023 13:48:07 GMT&quot;, &quot;age&quot; =&gt; &quot;523296&quot;, &quot;content-length&quot; =&gt; &quot;1256&quot;, &quot;vary&quot; =&gt; &quot;Accept-Encoding&quot;, &quot;expires&quot; =&gt; &quot;Thu, 31 Aug 2023 13:48:07 GMT&quot;, &quot;last-modified&quot; =&gt; &quot;Thu, 17 Oct 2019 07:18:26 GMT&quot;, &quot;accept-ranges&quot; =&gt; &quot;bytes&quot;)
-</code></pre></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Thursday 24 August 2023 13:48">Thursday 24 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+@test request.status == 204
+@test request.response == &quot;&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/977c65c6a12fd7d5e6aba0fdfecab2a7c475138a/src/delete.jl#L7-L21">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="HttpClient.get-Tuple{Any}" href="#HttpClient.get-Tuple{Any}"><code>HttpClient.get</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">get(url; headers, query, interface, timeout, retires) -&gt; Request</code></pre><p>Perform http get request and return <a href="#HttpClient.Request"><code>Request</code></a> object.</p><p><strong>Example</strong></p><pre><code class="language-julia hljs">headers = [
+    &quot;Content-Type&quot; =&gt; &quot;application/json&quot;, 
+    &quot;User-Agent&quot; =&gt; &quot;http-julia&quot;
+]
+request = HttpClient.get(&quot;https://reqbin.com/echo/get/json&quot;; headers)
+@test request.status == 200
+@test request.response == &quot;{\&quot;success\&quot;:\&quot;true\&quot;}\n&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/977c65c6a12fd7d5e6aba0fdfecab2a7c475138a/src/get.jl#L8-L23">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="HttpClient.post-Tuple{Any}" href="#HttpClient.post-Tuple{Any}"><code>HttpClient.post</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">post(url; headers, query, interface, timeout, retires, body) -&gt; Request</code></pre><p>Perform http post request and return <a href="#HttpClient.Request"><code>Request</code></a> object.</p><p><strong>Example</strong></p><p><strong>Successful registration</strong></p><pre><code class="language-julia hljs">url = &quot;https://reqres.in/api/register/&quot;
+headers = [&quot;User-Agent&quot; =&gt; &quot;http-julia&quot;, &quot;Content-Type&quot; =&gt; &quot;application/json&quot;]
+body = &quot;&quot;&quot;{
+    &quot;email&quot;: &quot;eve.holt@reqres.in&quot;,
+    &quot;password&quot;: &quot;pistol&quot;
+}&quot;&quot;&quot;
+request = HttpClient.post(url; headers, body)
+
+@test request.status == 200
+@test request.response == &quot;{\&quot;id\&quot;:4,\&quot;token\&quot;:\&quot;QpwL5tke4Pnpja7X4\&quot;}&quot;</code></pre><p><strong>Unsuccessful registration</strong></p><pre><code class="language-julia hljs">url = &quot;https://reqres.in/api/register/&quot;
+headers = [&quot;User-Agent&quot; =&gt; &quot;http-julia&quot;, &quot;Content-Type&quot; =&gt; &quot;application/json&quot;]
+body = &quot;&quot;&quot;{
+    &quot;email&quot;: &quot;eve.holt@reqres.in&quot;
+}&quot;&quot;&quot; # remove password field
+request = HttpClient.post(url; headers, body)
+
+@test request.status == 400
+@test request.response == &quot;{\&quot;error\&quot;:\&quot;Missing password\&quot;}&quot;</code></pre><p><strong>Clickhouse</strong></p><pre><code class="language-julia hljs">url = &quot;https://play.clickhouse.com/&quot;
+query = Dict(&quot;user&quot; =&gt; &quot;explorer&quot;)
+headers = Dict(&quot;Content-Type&quot; =&gt; &quot;application/json&quot;, &quot;User-Agent&quot; =&gt; &quot;http-julia&quot;)
+body = &quot;show databases&quot;
+request = HttpClient.post(url; query, headers, body)
+@test request.status == 200</code></pre><pre><code class="language-julia-repl hljs">julia&gt; print(request.response)
+blogs
+default
+git_clickhouse
+mgbench
+system</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/977c65c6a12fd7d5e6aba0fdfecab2a7c475138a/src/post.jl#L1-L52">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="HttpClient.put-Tuple{Any}" href="#HttpClient.put-Tuple{Any}"><code>HttpClient.put</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">put(url; headers, query, interface, timeout, retires, body) -&gt; Request</code></pre><p>Perform http put request and return <a href="#HttpClient.Request"><code>Request</code></a> object.</p><p><strong>Example</strong></p><pre><code class="language-julia hljs">url = &quot;https://reqres.in/api/users/2&quot;
+headers = [&quot;User-Agent&quot; =&gt; &quot;http-julia&quot;, &quot;Content-Type&quot; =&gt; &quot;application/json&quot;]
+body = &quot;&quot;&quot;{
+    &quot;name&quot;: &quot;morpheus&quot;,
+    &quot;job&quot;: &quot;zion resident&quot;
+}&quot;&quot;&quot;
+request = HttpClient.put(url; headers, body)
+
+@test request.status == 200</code></pre><pre><code class="language-julia-repl hljs">julia&gt; print(request.response)
+{&quot;name&quot;:&quot;morpheus&quot;,&quot;job&quot;:&quot;zion resident&quot;,&quot;updatedAt&quot;:&quot;2023-08-25T12:17:32.283Z&quot;}</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/LexaLutyi/HttpClient.jl/blob/977c65c6a12fd7d5e6aba0fdfecab2a7c475138a/src/put.jl#L6-L28">source</a></section></article></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Friday 25 August 2023 13:28">Friday 25 August 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
