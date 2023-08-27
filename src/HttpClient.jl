@@ -1,7 +1,7 @@
 module HttpClient
 
 using LibCURL2
-using LibCURL_jll
+# using LibCURL_jll
 
 include("curl_error.jl")
 include("request.jl")
