@@ -68,7 +68,8 @@ end
 @testset "No protocol" begin
     url = "example.com"
     # TODO should work without protocol or raise meaningful error
-    @test_throws "Out of memory" HttpClient.get(url)
+    # @test_throws "Out of memory" HttpClient.get(url)
+    @test HttpClient.get(url).status == 200
 end
 
 
@@ -289,3 +290,5 @@ end # Delete
     end
 
 end # Put
+
+include("web_sockets.jl")

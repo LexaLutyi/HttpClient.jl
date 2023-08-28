@@ -1,7 +1,7 @@
 name = "HttpClient"
 uuid = "a8bcf8b1-64b8-41f7-8d00-5e694f9aa795"
 authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
-version = "1.1.3-DEV"
+version = "1.1.4-DEV"
 
 [deps]
 LibCURL2 = "a9341e5c-07f0-4893-8fea-80ee6f4ebcc7"
