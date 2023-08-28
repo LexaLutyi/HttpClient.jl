@@ -5,7 +5,7 @@ end
 
 
 """
-    delete(url; headers, query, interface, timeout, retires, what) -> Request
+    delete(url; headers, query, interface, timeout, retries, what) -> Request
 
 Perform http delete request and return [`Request`](@ref) object.
 

@@ -4,7 +4,7 @@ end
 
 
 """
-    put(url; headers, query, interface, timeout, retires, body) -> Request
+    put(url; headers, query, interface, timeout, retries, body) -> Request
 
 Perform http put request and return [`Request`](@ref) object.
 

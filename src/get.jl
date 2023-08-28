@@ -6,7 +6,7 @@ end
 
 
 """
-    get(url; headers, query, interface, timeout, retires) -> Request
+    get(url; headers, query, interface, timeout, retries) -> Request
 
 Perform http get request and return [`Request`](@ref) object.
 

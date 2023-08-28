@@ -1,5 +1,5 @@
 """
-    post(url; headers, query, interface, timeout, retires, body) -> Request
+    post(url; headers, query, interface, timeout, retries, body) -> Request
 
 Perform http post request and return [`Request`](@ref) object.
 
