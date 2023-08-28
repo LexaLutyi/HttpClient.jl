@@ -1,9 +1,19 @@
 # HttpClient
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://LexaLutyi.github.io/HttpClient.jl/stable/)
+<!-- [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://LexaLutyi.github.io/HttpClient.jl/stable/) -->
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://LexaLutyi.github.io/HttpClient.jl/dev/)
 [![Build Status](https://github.com/LexaLutyi/HttpClient.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/LexaLutyi/HttpClient.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
+# Установка
+Чтобы не устанавливать Registy, следует установить пакет и зависимости через git.
+```julia-repl
+add https://github.com/LexaLutyi/LibCURL2_jll.jl.git
+add https://github.com/LexaLutyi/LibCURL2.jl.git
+add https://github.com/LexaLutyi/HttpClient.jl.git
+```
+
+
+# Задание
 ### Быстрый старт
 
   - ~~[Atom IDE](https://atom.io/) + [Juno](https://junolab.org/)~~ or [VS Code](https://www.julia-vscode.org/)
