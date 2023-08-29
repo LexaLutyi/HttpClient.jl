@@ -38,8 +38,9 @@ jobs:
         run: |
           julia --project -e '
             using Pkg
-            pkg"registry add https://github.com/LexaLutyi/MyJuliaRegistry.git"
-            pkg"registry add General https://github.com/JuliaRegistries/General.git"'
+            Pkg.Registry.add(RegistrySpec(url = "https://github.com/LexaLutyi/MyJuliaRegistry.git"))
+            Pkg.Registry.add("General")
+            '
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
   docs:
