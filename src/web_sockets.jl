@@ -134,8 +134,14 @@ function recv_one_frame(connection)
         connection.isopen = false
         @error curl_code_to_string(result)
     end
+    
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])
+    
     frame = unsafe_load(meta_ptr[1], 1)
+    if (frame.flags & CURLWS_BINARY) != 0
+        @warn "received binary data"
+    end
+
     LibCURL2.curl_ws_frame
     result, message, frame
 end
