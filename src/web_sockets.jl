@@ -70,8 +70,14 @@ function open_connection(url;
     set_ssl(curl)
 
     set_connect_only(curl)
+    response = set_response(curl)
 
-    @curlok curl_easy_perform(curl)
+    result = curl_easy_perform(curl)
+    if result != CURLE_OK
+        response_string = response_as_string(response)
+        @error response_string
+        error(curl_code_to_string(result))
+    end
     
     # @show http_code = get_http_code(curl)
     # @show headers = get_headers(curl)
