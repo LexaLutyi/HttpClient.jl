@@ -21,3 +21,5 @@ docs/site/
 products/
 
 notebooks/
+
+*.html
