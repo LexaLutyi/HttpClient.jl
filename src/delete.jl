@@ -29,7 +29,7 @@ function delete(url;
     )
 
     curl = curl_easy_init()
-    set_url(curl, url, query)
+    full_url = set_url(curl, url, query)
 
     # ! How to test this?
     # curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
@@ -53,5 +53,5 @@ function delete(url;
     # ! How to test this?
     # curl_easy_cleanup(curl)
 
-    Request(response_string, http_code, headers)
+    Request(full_url, response_string, http_code, headers)
 end

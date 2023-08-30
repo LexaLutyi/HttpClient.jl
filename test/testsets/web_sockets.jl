@@ -6,6 +6,7 @@
     ]
     connection = HttpClient.open_connection(url; headers)
     @test isopen(connection)
+    @test connection.full_url == "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
     close(connection)
     @test isopen(connection) == false
 end
@@ -25,6 +26,7 @@ end
         push!(buffer, "function is called")
         push!(buffer, connection)
         @test isopen(connection)
+        @test connection.full_url == "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
         @test connection.curl != C_NULL
 
         HttpClient.send(connection, "Hello binance")

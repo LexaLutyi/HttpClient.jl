@@ -1,12 +1,13 @@
 """
 ```
 struct Request
+    full_url::String
     response::String
     status::Int
     headers::Dict{String, String}
 end
 ```
-Store status, response and headers of successful http request.
+Store full_url, status, response and headers of successful http request.
 
 Example
 ```julia-repl
@@ -34,6 +35,7 @@ Dict{String, String} with 11 entries:
 ```
 """
 struct Request
+    full_url::String
     response::String
     status::Int
     headers::Dict{String, String}
@@ -42,6 +44,7 @@ end
 
 function Base.show(io::IO, r::Request)
     println(io, "HttpClient.Request")
+    println(io, "  url = $(r.full_url)")
     println(io, "  status = $(r.status)")
     println(io, "  response = \"\"\"\n$(r.response)\n\"\"\"")
     println(io, "  headers = $(r.headers)")

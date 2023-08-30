@@ -18,6 +18,7 @@ end
 """
 mutable struct Connection
     curl::Ptr{CURL}
+    full_url::String
     isopen::Bool
 end
 
@@ -35,7 +36,6 @@ Close connection and cleanup.
 """
 function Base.close(c::Connection)
     if !isopen(c)
-        @error "Connection is not open"
         return
     end
     sent = Ref{Csize_t}(0)
@@ -63,26 +63,20 @@ function open_connection(url;
     )
     curl = curl_easy_init()
 
-    set_url(curl, url, query)
+    full_url = set_url(curl, url, query)
     set_headers(curl, headers)
     set_interface(curl, interface)
     set_timeout(curl, timeout)
     set_ssl(curl)
 
     set_connect_only(curl)
-    response = set_response(curl)
 
-    result = curl_easy_perform(curl)
-    if result != CURLE_OK
-        response_string = response_as_string(response)
-        @error response_string
-        error(curl_code_to_string(result))
-    end
+    @curlok curl_easy_perform(curl)
     
     # @show http_code = get_http_code(curl)
     # @show headers = get_headers(curl)
 
-    Connection(curl, true)
+    Connection(curl, full_url, true)
 end
 
 
@@ -132,17 +126,20 @@ function recv_one_frame(connection)
 
     if result != CURLE_OK
         connection.isopen = false
-        @error curl_code_to_string(result)
+        @error "Connection is closed: $curl_code_to_string(result)"
     end
     
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])
     
-    frame = unsafe_load(meta_ptr[1], 1)
-    if (frame.flags & CURLWS_BINARY) != 0
-        @warn "received binary data"
+    if meta_ptr[1] != C_NULL
+        frame = unsafe_load(meta_ptr[1], 1)
+        if (frame.flags & CURLWS_BINARY) != 0
+            @warn "received binary data"
+        end
+    else
+        frame = curl_ws_frame(0, 0, 0, 0, 0)
     end
-
-    LibCURL2.curl_ws_frame
+    
     result, message, frame
 end
 
@@ -154,7 +151,7 @@ Receive message from web socket. Close `connection` on error.
 """
 function recv(connection)
     result, full_message, frame = recv_one_frame(connection)
-    while frame.bytesleft > 0
+    while (frame.bytesleft > 0) && isopen(connection)
         result, message, frame = recv_one_frame(connection)
         full_message *= message
     end
