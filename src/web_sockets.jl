@@ -71,8 +71,12 @@ function open_connection(url;
 
     set_connect_only(curl)
 
-    @curlok curl_easy_perform(curl)
-    
+    try
+        @curlok curl_easy_perform(curl)
+    catch e
+        @error "Connect to web socket" full_url e.msg
+        error(e)
+    end
     # @show http_code = get_http_code(curl)
     # @show headers = get_headers(curl)
 
