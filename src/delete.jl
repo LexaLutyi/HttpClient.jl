@@ -28,9 +28,8 @@ function delete(url;
     what = ""
     )
 
-    c_url = set_query(url, query)
     curl = curl_easy_init()
-    @curlok curl_easy_setopt(curl, CURLOPT_CURLU, c_url)
+    set_url(curl, url, query)
 
     # ! How to test this?
     # curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)

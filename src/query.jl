@@ -8,3 +8,9 @@ function set_query(url, query)
     end
     c_url
 end
+
+
+function set_url(curl, url, query)
+    c_url = set_query(url, query)
+    @curlok curl_easy_setopt(curl, CURLOPT_CURLU, c_url)
+end
