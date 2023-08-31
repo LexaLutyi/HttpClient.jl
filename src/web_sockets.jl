@@ -3,7 +3,7 @@
 
 active connection using web sockets
 
-see also [`send`](@ref), [`recv`](@ref), [`isopen`](@ref)
+see also [`send`](@ref), [`receive`](@ref), [`isopen`](@ref)
 
 # Usage
 ```julia
@@ -130,7 +130,7 @@ function recv_one_frame(connection)
 
     if result != CURLE_OK
         connection.isopen = false
-        @error "Connection is closed: $curl_code_to_string(result)"
+        @error "Connection is closed: " * curl_code_to_string(result)
     end
     
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])
@@ -149,11 +149,11 @@ end
 
 
 """
-    recv(connection) -> data
+    receive(connection) -> data
 
 Receive message from web socket. Close `connection` on error.
 """
-function recv(connection)
+function receive(connection)
     result, full_message, frame = recv_one_frame(connection)
     while (frame.bytesleft > 0) && isopen(connection)
         result, message, frame = recv_one_frame(connection)

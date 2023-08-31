@@ -32,7 +32,7 @@ end
         HttpClient.send(connection, "Hello binance")
         @test isopen(connection)
 
-        data = HttpClient.recv(connection)
+        data = HttpClient.receive(connection)
         # @show String(data)
         @test typeof(JSON.parse(data))<:Dict
         @test isopen(connection)
