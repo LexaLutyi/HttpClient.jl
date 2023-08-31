@@ -10,7 +10,8 @@ end
 
 Perform http get request and return [`Request`](@ref) object.
 
-# Example
+# Example 
+## reqbin.com
 ```julia
 headers = [
     "Content-Type" => "application/json", 
@@ -19,6 +20,18 @@ headers = [
 request = HttpClient.get("https://reqbin.com/echo/get/json"; headers)
 @test request.status == 200
 @test request.response == "{\\"success\\":\\"true\\"}\\n"
+```
+## httpbin.org
+```julia
+query = Dict{String,Any}("echo" => "你好嗎")
+headers = [
+    "User-Agent" => "http-julia",
+    "Content-Type" => "application/json",
+]
+interface = "0.0.0.0"
+request = HttpClient.get("httpbin.org/get"; 
+    query, headers, interface, timeout=30, retries=10)
+@test request.status == 200
 ```
 """
 function get(url; 
