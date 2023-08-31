@@ -6,9 +6,9 @@ CurrentModule = HttpClient
 
 Documentation for [HttpClient](https://github.com/LexaLutyi/HttpClient.jl).
 
-```@index
-```
-
-```@autodocs
-Modules = [HttpClient]
+```@contents
+Pages = [
+    "http.md",
+    "websockets.md"
+]
 ```

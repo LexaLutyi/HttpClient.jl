@@ -16,6 +16,8 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "HTTP requests" => "http.md",
+        "Web Sockets" => "websockets.md"
     ],
 )
 
