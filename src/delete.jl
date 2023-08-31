@@ -41,10 +41,7 @@ function delete(url;
     set_delete(curl, what)
     set_ssl(curl)
 
-    retry(
-        curl -> HttpClient.@curlok(curl_easy_perform(curl)); 
-        delays=fill(timeout, retries)
-    )(curl)
+    perform(curl, timeout, retries)
 
     http_code = get_http_code(curl)
     response_string = response_as_string(response)

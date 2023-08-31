@@ -12,6 +12,7 @@ include("interface.jl")
 include("timeout.jl")
 include("data.jl")
 include("ssl.jl")
+include("perform.jl")
 
 include("get.jl")
 include("post.jl")
