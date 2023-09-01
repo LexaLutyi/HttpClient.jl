@@ -1,0 +1,52 @@
+using Sockets
+using HttpClient
+using JSON
+
+@testset "multi-session" begin
+    query = Dict{String,Any}(
+        "echo" => "你好嗎"
+    )
+
+    headers = Pair{String,String}[
+        "User-Agent" => "cURL.jl",
+        "Content-Type" => "application/json",
+    ]
+
+    payload = JSON.json(Dict{String,Any}("echo" => "hi"))
+
+    listener = Sockets.listen(IPv4("127.0.0.1"), 1234)
+
+    @async while true
+        body = """
+        HTTP/1.1 200 OK
+        Server: nginx
+        Date: Wed, 10 Aug 2022 22:00:01 GMT
+        Content-Type: text/html; charset=utf-8
+        Connection: keep-alive
+        Set-Cookie: key=1234-1234-1234-1234-1234; SameSite=Strict; HttpOnly; path=/
+        Referrer-Policy: origin-when-cross-origin
+    
+        <h1>Hello</h1>
+        """
+    
+        connection = accept(listener)
+    
+        @async while isopen(connection)
+            echo = Sockets.readavailable(connection)
+            # println(String(echo))
+            write(connection, body)
+            close(connection)
+        end
+    end
+
+    sleep(5)
+
+    req = HttpClient.get(
+        "http://127.0.0.1:1234",
+        headers = headers,
+        query = query,
+    )
+
+    @test req.status == 200
+    @test String(req.response) == "<h1>Hello</h1>\n"
+end

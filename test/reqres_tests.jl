@@ -5,7 +5,7 @@ include("reqres_responses.jl")
     headers::Dict{String, String} = Dict()
     query::Dict{String, String} = Dict()
     interface::String = ""
-    timeout::Int = 0
+    connect_timeout::Int = 0
     retries::Int = 0
     body::String = ""
     what_to_delete = ""

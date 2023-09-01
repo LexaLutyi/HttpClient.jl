@@ -16,10 +16,10 @@ websocket(url; ...) do connection
 end
 ```
 """
-mutable struct Connection
-    curl::Ptr{CURL}
-    full_url::String
-    isopen::Bool
+@kwdef mutable struct Connection
+    pointers::RequestPointers = RequestPointers()
+    full_url::String = ""
+    isopen::Bool = false
 end
 
 
@@ -39,14 +39,14 @@ function Base.close(c::Connection)
         return
     end
     sent = Ref{Csize_t}(0)
-    @curlok curl_ws_send(c.curl, pointer(""), 0, sent, 0, CURLWS_CLOSE)
-    curl_easy_cleanup(c.curl)
+    @curlok curl_ws_send(c.pointers.easy_handle, pointer(""), 0, sent, 0, CURLWS_CLOSE)
+    # curl_easy_cleanup(c.pointers.easy_handle)
     c.isopen = false
     return
 end
 
 
-set_connect_only(curl) = @curlok curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 2)
+set_connect_only(easy_handle) = @curlok curl_easy_setopt(easy_handle, CURLOPT_CONNECT_ONLY, 2)
 
 
 """
@@ -58,29 +58,23 @@ function open_connection(url;
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 
     interface = "", 
-    timeout = 0, 
+    connect_timeout = 0, 
     retries = 0
     )
-    curl = curl_easy_init()
+    rp = RequestPointers()
+    easy_init(rp)
 
-    full_url = set_url(curl, url, query)
-    set_headers(curl, headers)
-    set_interface(curl, interface)
-    set_timeout(curl, timeout)
-    set_ssl(curl)
+    full_url = set_url(rp, url, query)
+    set_headers(rp.easy_handle, headers)
+    set_interface(rp.easy_handle, interface)
+    set_timeout(rp.easy_handle, connect_timeout)
+    set_ssl(rp.easy_handle)
 
-    set_connect_only(curl)
+    set_connect_only(rp.easy_handle)
 
-    try
-        @curlok curl_easy_perform(curl)
-    catch e
-        @error "Connect to web socket" full_url e.msg
-        error(e)
-    end
-    # @show http_code = get_http_code(curl)
-    # @show headers = get_headers(curl)
-
-    Connection(curl, full_url, true)
+    # perform(rp, connect_timeout, retries)
+    @curlok curl_easy_perform(rp.easy_handle)
+    Connection(rp, full_url, true)
 end
 
 
@@ -93,10 +87,10 @@ function websocket(f, url;
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 
     interface = "", 
-    timeout = 0, 
+    connect_timeout = 0, 
     retries = 0
     )
-    connection = open_connection(url; headers, query, interface, timeout, retries)
+    connection = open_connection(url; headers, query, interface, connect_timeout, retries)
     f(connection)
     close(connection)
 end
@@ -110,8 +104,8 @@ Close `connection` on error.
 """
 function send(connection, message)
     sent = Ref{Csize_t}(0)
-    curl = connection.curl
-    result = curl_ws_send(curl, pointer(message), length(message), sent, 0, CURLWS_TEXT)
+    easy_handle = connection.pointers.easy_handle
+    result = curl_ws_send(easy_handle, pointer(message), length(message), sent, 0, CURLWS_TEXT)
     if result != CURLE_OK
         connection.isopen = false
         error(curl_code_to_string(result))
@@ -121,12 +115,12 @@ end
 
 
 function recv_one_frame(connection)
-    curl = connection.curl
+    easy_handle = connection.pointers.easy_handle
     received = Ref{Csize_t}(0)
     meta_ptr = [Ptr{curl_ws_frame}(0)]
     buffer_size = 256
     buffer = zeros(UInt8, buffer_size)
-    result = curl_ws_recv(curl, buffer, buffer_size, received, meta_ptr)
+    result = curl_ws_recv(easy_handle, buffer, buffer_size, received, meta_ptr)
 
     if result != CURLE_OK
         connection.isopen = false

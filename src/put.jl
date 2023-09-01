@@ -26,37 +26,31 @@ julia> print(request.response)
 {"name":"morpheus","job":"zion resident","updatedAt":"2023-08-25T12:17:32.283Z"}
 ```
 """
-function put(url; 
-    headers = Dict{String, String}(), 
-    query = Dict{String, String}(),
-    body = "", 
-    interface = "", 
-    timeout = 0, 
-    retries = 0
-    )
-    
-    curl = curl_easy_init()
-    full_url = set_url(curl, url, query)
-
-    # ! How to test this?
-    # curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
-
-    response = set_response(curl)
-    set_headers(curl, headers)
-    set_interface(curl, interface)
-    set_timeout(curl, timeout)
-    set_data(curl, body)
-    set_put(curl)
-    set_ssl(curl)
-
-    perform(curl, timeout, retries)
-
-    http_code = get_http_code(curl)
-    response_string = response_as_string(response)
-    headers = get_headers(curl)
-
-    # ! How to test this?
-    # curl_easy_cleanup(curl)
-
-    Request(full_url, response_string, http_code, headers)
-end
+put(
+    url::AbstractString;
+    headers = Pair{String, String}[],
+    query = nothing,
+    body = nothing,
+    connect_timeout::Real = 60,
+    read_timeout::Real = 300,
+    interface::Union{String,Nothing} = nothing,
+    proxy::Union{String,Nothing} = nothing,
+    retries::Int64 = 1,
+    status_exception::Bool = true,
+    accept_encoding::String = "gzip",
+    ssl_verifypeer::Bool = true,
+) = request(
+    "put",
+    url;
+    headers,
+    query,
+    body,
+    connect_timeout,
+    read_timeout,
+    interface,
+    proxy,
+    retries,
+    status_exception,
+    accept_encoding,
+    ssl_verifypeer
+)

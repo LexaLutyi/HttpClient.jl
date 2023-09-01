@@ -2,6 +2,15 @@ mutable struct Response
     txt::Ptr{UInt8}
     allocated::Csize_t
     len::Csize_t
+    function Response(txt, allocated, len)
+        x = new(txt, allocated, len)
+        finalizer(x) do x
+            # @async println("Finalizing $x.")
+            if x.txt != C_NULL
+                Libc.free(x.txt)
+            end
+        end
+    end
 end
 
 
