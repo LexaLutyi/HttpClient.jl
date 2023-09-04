@@ -4,9 +4,10 @@ end
 
 
 """
-    put(url; headers, query, interface, timeout, retries, body) -> Request
+    put(url; <keyword arguments>) -> Request
 
 Perform http put request and return [`Request`](@ref) object.
+For supported arguments see [`request`](@ref) function.
 
 # Example
 

@@ -99,7 +99,7 @@
             reqres_test.headers,
             reqres_test.query,
             reqres_test.interface,
-            connect_timeout = 1,
+            read_timeout = 1,
             retries = 0
         )
     
@@ -108,7 +108,7 @@
             reqres_test.headers,
             reqres_test.query,
             reqres_test.interface,
-            connect_timeout = 6,
+            read_timeout = 6,
             retries = 0
         )
         @test request.status == reqres_test.status
@@ -123,7 +123,7 @@
                 reqres_test.headers,
                 reqres_test.query,
                 reqres_test.interface,
-                reqres_test.connect_timeout,
+                reqres_test.read_timeout,
                 reqres_test.retries
             )
     
@@ -143,10 +143,10 @@
     
     # @testset "Retries" begin
     #     url = "https://httpbin.org/get"
-    #     connect_timeout = 1
+    #     read_timeout = 1
     #     retries = 2
-    #     t = @elapsed @test_throws "connect_timeout was reached" HttpClient.get(url; connect_timeout, retries)
-    #     @test connect_timeout * (retries) < t < 2 * connect_timeout * (retries + 1)
+    #     t = @elapsed @test_throws "read_timeout was reached" HttpClient.get(url; read_timeout, retries)
+    #     @test read_timeout * (retries) < t < 2 * read_timeout * (retries + 1)
     # end
     
 end # Get

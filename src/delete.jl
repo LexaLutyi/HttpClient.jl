@@ -6,9 +6,10 @@ end
 
 
 """
-    delete(url; headers, query, interface, timeout, retries, what) -> Request
+    delete(url; <keyword arguments>) -> Request
 
 Perform http delete request and return [`Request`](@ref) object.
+For supported arguments see [`request`](@ref) function. 
 
 # Example
 ```julia

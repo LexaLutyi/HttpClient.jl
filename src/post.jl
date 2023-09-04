@@ -1,7 +1,8 @@
 """
-    post(url; headers, query, interface, timeout, retries, body) -> Request
+    post(url; <keyword arguments>) -> Request
 
 Perform http post request and return [`Request`](@ref) object.
+For supported arguments see [`request`](@ref) function.
 
 # Example
 
@@ -39,6 +40,7 @@ query = Dict("user" => "explorer")
 headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
 body = "show databases"
 request = HttpClient.post(url; query, headers, body)
+
 @test request.status == 200
 ```
 ```julia-repl

@@ -6,9 +6,10 @@ end
 
 
 """
-    get(url; headers, query, interface, timeout, retries) -> Request
+    get(url; <keyword arguments>) -> Request
 
 Perform http get request and return [`Request`](@ref) object.
+For supported arguments see [`request`](@ref) function.
 
 # Example 
 ## reqbin.com
@@ -30,7 +31,7 @@ headers = [
 ]
 interface = "0.0.0.0"
 request = HttpClient.get("httpbin.org/get"; 
-    query, headers, interface, timeout=30, retries=10)
+    query, headers, interface, connect_timeout=30, retries=10)
 @test request.status == 200
 ```
 """

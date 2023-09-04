@@ -89,6 +89,31 @@ function multi_init(rp::RequestPointers)
 end
 
 
+"""
+    request(method::AbstractString, url::AbstractString, <keyword arguments>) -> Request
+Send a HTTP Request Message and receive a HTTP Response Message.
+For shortcuts see [`get`](@ref), [`post`](@ref), [`delete`](@ref), [`put`](@ref).
+
+# Example
+```julia
+HttpClient.request("get", "https://example.com")
+HttpClient.get("https://example.com")
+```
+# Arguments
+* `method`: get, post, put, delete
+* `url`: if no scheme, then https
+* `headers`: iterable container of `Pair{String, String}`
+* `query`: iterable container of `Pair{String, String}`
+* `body`: `nothing` or `String`
+* `connect_timeout`: unsupported
+* `read_timeout`: abort request after `read_timeout` seconds
+* `interface`: outgoing network interface. Interface name, an IP address, or a host name.
+* `proxy`: unsupported
+* `retries`: number of tries to perform
+* `status_exception`: raise an error if request status >= 300
+* `accept_encoding`: unsupported
+* `ssl_verifypeer`: unsupported
+"""
 function request(
     method::AbstractString,
     url::AbstractString;
@@ -112,7 +137,7 @@ function request(
     response = set_response(rp.easy_handle)
     set_headers(rp.easy_handle, headers)
     set_interface(rp.easy_handle, interface)
-    set_timeout(rp.easy_handle, connect_timeout)
+    set_timeout(rp.easy_handle, read_timeout)
     set_ssl(rp.easy_handle)
 
     if lowercase(method) == "post"
@@ -128,7 +153,7 @@ function request(
         error("HttpClient: unsupported method")
     end
 
-    perform(rp, connect_timeout, retries)
+    perform(rp, read_timeout, retries)
 
     http_code = get_http_code(rp.easy_handle)
     response_string = response_as_string(response)
