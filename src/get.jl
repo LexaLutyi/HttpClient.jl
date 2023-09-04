@@ -6,9 +6,10 @@ end
 
 
 """
-    get(url; headers, query, interface, timeout, retries) -> Request
+    get(url; <keyword arguments>) -> Request
 
 Perform http get request and return [`Request`](@ref) object.
+For supported arguments see [`request`](@ref) function.
 
 # Example 
 ## reqbin.com
@@ -30,41 +31,33 @@ headers = [
 ]
 interface = "0.0.0.0"
 request = HttpClient.get("httpbin.org/get"; 
-    query, headers, interface, timeout=30, retries=10)
+    query, headers, interface, connect_timeout=30, retries=10)
 @test request.status == 200
 ```
 """
-function get(url; 
-    headers = Dict{String, String}(), 
-    query = Dict{String, String}(), 
-    interface = "", 
-    timeout = 0, 
-    retries = 0
-    )
-    
-    curl = curl_easy_init()
-    full_url = set_url(curl, url, query)
-
-    # ! How to test this?
-    # curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
-
-    response = set_response(curl)
-    set_headers(curl, headers)
-    set_interface(curl, interface)
-    set_timeout(curl, timeout)
-    set_ssl(curl)
-
-    retry(
-        curl -> HttpClient.@curlok(curl_easy_perform(curl)); 
-        delays=fill(timeout, retries)
-    )(curl)
-
-    http_code = get_http_code(curl)
-    response_string = response_as_string(response)
-    headers = get_headers(curl)
-
-    # ! How to test this?
-    # curl_easy_cleanup(curl)
-
-    Request(full_url, response_string, http_code, headers)
-end
+get(
+    url::AbstractString;
+    headers = Pair{String, String}[],
+    query = nothing,
+    connect_timeout::Real = 60,
+    read_timeout::Real = 300,
+    interface::Union{String,Nothing} = nothing,
+    proxy::Union{String,Nothing} = nothing,
+    retries::Int64 = 1,
+    status_exception::Bool = true,
+    accept_encoding::String = "gzip",
+    ssl_verifypeer::Bool = true,
+) = request(
+    "get",
+    url;
+    headers,
+    query,
+    connect_timeout,
+    read_timeout,
+    interface,
+    proxy,
+    retries,
+    status_exception,
+    accept_encoding,
+    ssl_verifypeer
+)

@@ -46,7 +46,7 @@
                 reqres_test.headers,
                 reqres_test.query,
                 reqres_test.interface,
-                reqres_test.timeout,
+                reqres_test.read_timeout,
                 reqres_test.retries,
                 body = reqres_test.body
             )

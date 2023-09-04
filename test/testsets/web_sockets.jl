@@ -22,12 +22,12 @@ end
     ]
     # url = "wss://socketsbay.com/wss/v2/1/d5da93e90d8b8fb64d42d3e65b8fd68d/"
 
-    HttpClient.websocket(url; headers, timeout=10) do connection
+    HttpClient.websocket(url; headers, connect_timeout=10) do connection
         push!(buffer, "function is called")
         push!(buffer, connection)
         @test isopen(connection)
         @test connection.full_url == "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
-        @test connection.curl != C_NULL
+        @test connection.pointers.easy_handle != C_NULL
 
         HttpClient.send(connection, "Hello binance")
         @test isopen(connection)

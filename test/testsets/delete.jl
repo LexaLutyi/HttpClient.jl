@@ -11,7 +11,7 @@
     @testset "play.clickhouse.com" begin
         url = "https://play.clickhouse.com/"
         headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
-        request = HttpClient.delete(url; headers, what = "play")
+        request = HttpClient.delete(url; headers, body = "play")
         @test request.status == 501
         @test request.response == ""
     end
@@ -23,9 +23,9 @@
                 reqres_test.headers,
                 reqres_test.query,
                 reqres_test.interface,
-                reqres_test.timeout,
+                reqres_test.read_timeout,
                 reqres_test.retries,
-                what = reqres_test.what_to_delete
+                body = reqres_test.what_to_delete
             )
     
             @test request.status == reqres_test.status
