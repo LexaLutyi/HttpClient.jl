@@ -58,8 +58,9 @@ function open_connection(url;
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 
     interface = "", 
-    connect_timeout = 0, 
-    retries = 0
+    connect_timeout = 60, 
+    retries = 300,
+    proxy = nothing
     )
     rp = RequestPointers()
     easy_init(rp)
@@ -81,17 +82,37 @@ end
 """
     websocket(url; headers, query, interface, timeout, retries) -> Connection
 
-Connect to a web socket server, run `f` on connection, then close connection.
+Connect to a web socket server, run `handle` on connection, then close connection.
+
+# Arguments
+* `handle`: function to call on open connection
+* `url`: a string containing url
+* `headers`: an iterable container of `Pair{String, String}`
+* `query`: an iterable container of `Pair{String, String}`
+* `connect_timeout`: abort request after `read_timeout` seconds
+* `read_timeout`: unsupported
+* `interface`: outgoing network interface. Interface name, an IP address, or a host name.
+* `proxy`: unsupported
+
+# Example
+```
+websocket(url; ...) do connection
+    # your code
+end
+```
+
 """
-function websocket(f, url; 
+function websocket(handle, url; 
     headers = Dict{String, String}(), 
     query = Dict{String, String}(), 
     interface = "", 
-    connect_timeout = 0, 
-    retries = 0
+    connect_timeout = 60, 
+    read_timeout = 300, 
+    retries = 0,
+    proxy = nothing
     )
     connection = open_connection(url; headers, query, interface, connect_timeout, retries)
-    f(connection)
+    handle(connection)
     close(connection)
 end
 
