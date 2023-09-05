@@ -1,13 +1,13 @@
 include("reqres_responses.jl")
 
-@kwdef struct ReqresTest
+@kwdef struct ReqresTest{Query, Body}
     url::String
     headers::Dict{String, String} = Dict()
-    query::Dict{String, String} = Dict()
+    query::Query = nothing
     interface::String = ""
     read_timeout::Int = 0
     retries::Int = 0
-    body::String = ""
+    body::Body = nothing
     what_to_delete = ""
 
     status::Int
@@ -21,9 +21,36 @@ headers = Dict(
 
 reqres_test_get = Dict{String, ReqresTest}()
 
-reqres_test_get["get_list_users"] = ReqresTest(;
+reqres_test_get["get_list_users: query as Dict"] = ReqresTest(;
     url = "https://reqres.in/api/users",
     query = Dict("page" => "2"),
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as Array"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = ["page=2"],
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as Array of Pair"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = ["page" => "2"],
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as string"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = "page=2",
     headers,
     status = 200,
     response = get_list_users
@@ -81,13 +108,32 @@ reqres_test_get["get_delayed_response"] = ReqresTest(;
 
 reqres_test_post = Dict{String, ReqresTest}()
 
-reqres_test_post["post_create"] = ReqresTest(;
+reqres_test_post["post_create: body as string"] = ReqresTest(;
     url = "https://reqres.in/api/users",
     headers,
     status = 201,
     response = post_create_response,
     body = post_create_body
 )
+
+
+reqres_test_post["post_create: body as bytes"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    headers,
+    status = 201,
+    response = post_create_response,
+    body = Vector{UInt8}(post_create_body)
+)
+
+
+reqres_test_post["post_create: body is nothing"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    headers,
+    status = 201,
+    response = post_create_response,
+    body = nothing
+)
+
 
 reqres_test_post["post_register_successful"] = ReqresTest(;
     url = "https://reqres.in/api/register",
