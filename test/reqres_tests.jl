@@ -1,9 +1,9 @@
 include("reqres_responses.jl")
 
-@kwdef struct ReqresTest
+@kwdef struct ReqresTest{Query}
     url::String
     headers::Dict{String, String} = Dict()
-    query::Dict{String, String} = Dict()
+    query::Query = nothing
     interface::String = ""
     read_timeout::Int = 0
     retries::Int = 0
@@ -21,9 +21,36 @@ headers = Dict(
 
 reqres_test_get = Dict{String, ReqresTest}()
 
-reqres_test_get["get_list_users"] = ReqresTest(;
+reqres_test_get["get_list_users: query as Dict"] = ReqresTest(;
     url = "https://reqres.in/api/users",
     query = Dict("page" => "2"),
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as Array"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = ["page=2"],
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as Array of Pair"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = ["page" => "2"],
+    headers,
+    status = 200,
+    response = get_list_users
+)
+
+
+reqres_test_get["get_list_users: query as string"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    query = "page=2",
     headers,
     status = 200,
     response = get_list_users
