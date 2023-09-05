@@ -52,8 +52,19 @@
             )
     
             @test request.status == reqres_test.status
-            if name != "post_create"
-                @test JSON.parse(request.response) == JSON.parse(reqres_test.response)
+            if name == "post_create: body is nothing"
+                continue
+            end
+            A = JSON.parse(request.response)
+            B = JSON.parse(reqres_test.response)
+            for key in keys(B)
+                if key == "createdAt"
+                    @test A[key] >= B[key]
+                elseif key == "id"
+                    nothing
+                else
+                    @test A[key] == B[key]
+                end
             end
         end
     end

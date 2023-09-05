@@ -1,13 +1,13 @@
 include("reqres_responses.jl")
 
-@kwdef struct ReqresTest{Query}
+@kwdef struct ReqresTest{Query, Body}
     url::String
     headers::Dict{String, String} = Dict()
     query::Query = nothing
     interface::String = ""
     read_timeout::Int = 0
     retries::Int = 0
-    body::String = ""
+    body::Body = nothing
     what_to_delete = ""
 
     status::Int
@@ -108,13 +108,32 @@ reqres_test_get["get_delayed_response"] = ReqresTest(;
 
 reqres_test_post = Dict{String, ReqresTest}()
 
-reqres_test_post["post_create"] = ReqresTest(;
+reqres_test_post["post_create: body as string"] = ReqresTest(;
     url = "https://reqres.in/api/users",
     headers,
     status = 201,
     response = post_create_response,
     body = post_create_body
 )
+
+
+reqres_test_post["post_create: body as bytes"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    headers,
+    status = 201,
+    response = post_create_response,
+    body = Vector{UInt8}(post_create_body)
+)
+
+
+reqres_test_post["post_create: body is nothing"] = ReqresTest(;
+    url = "https://reqres.in/api/users",
+    headers,
+    status = 201,
+    response = post_create_response,
+    body = nothing
+)
+
 
 reqres_test_post["post_register_successful"] = ReqresTest(;
     url = "https://reqres.in/api/register",
