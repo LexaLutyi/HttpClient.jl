@@ -28,7 +28,7 @@ include("testsets/put.jl")
 include("testsets/async.jl")
 
 # ! Don't work in git CI
-include("testsets/web_sockets.jl")
+# include("testsets/web_sockets.jl")
 
 # ! Don't work in test environment
 
