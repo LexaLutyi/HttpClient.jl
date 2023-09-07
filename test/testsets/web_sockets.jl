@@ -1,7 +1,9 @@
 @testset "web sockets" begin
 
 url_socketsbay = "wss://socketsbay.com/wss/v2/1/d5da93e90d8b8fb64d42d3e65b8fd68d/"
-url_binance = "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
+# url_binance = "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
+url_binance = "wss://ws-api.binance.com:443/ws-api/v3"
+ping_body = """{  "id": "922bcc6e-9de8-440d-9e84-7c80933a8d0d",  "method": "ping"}"""
 
 
 @testset "open and close" begin
@@ -86,6 +88,7 @@ end
     HttpClient.websocket(url_binance; headers, connect_timeout=10) do connection
         HttpClient.send_pong(connection)
         sleep(1)
+        HttpClient.send(connection, ping_body)
         data, message_type = HttpClient.receive_any(connection)
         @test message_type == "text"
     end
@@ -101,12 +104,9 @@ end
         url_binance;
         headers,
     ) do connection
+        HttpClient.send(connection, ping_body)
         deflate_message, _ = HttpClient.receive_any(connection)
         message = HttpClient.decompress(deflate_message)
-        
-        @test typeof(JSON.parse(String(message))) <: Dict
-
-        message = HttpClient.receive(connection)
         @test typeof(JSON.parse(String(message))) <: Dict
     end
 
@@ -116,6 +116,7 @@ end
         headers,
         isdeflate = true
     ) do connection
+        HttpClient.send(connection, ping_body)
         message = HttpClient.receive(connection)
         @test typeof(JSON.parse(String(message))) <: Dict
     end
