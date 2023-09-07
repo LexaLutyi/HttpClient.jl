@@ -1,3 +1,6 @@
+const Header = Pair{String,String}
+
+
 function extract_c_headers(curl)
     prev = Ptr{curl_header}(0)
     headers = curl_header[]

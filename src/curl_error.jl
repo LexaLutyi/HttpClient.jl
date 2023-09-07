@@ -11,3 +11,14 @@ macro curlok(exp)
         rc
     end
 end
+
+
+function print_curl_error(code, error_buffer::String)
+    error_base = curl_code_to_string(code)
+    error(join([error_base, error_buffer], ": "))
+end
+
+function print_curl_error(code, error_buffer::Vector{UInt8})
+    str = GC.@preserve error_buffer unsafe_string(pointer(error_buffer))
+    print_curl_error(code, str)
+end
