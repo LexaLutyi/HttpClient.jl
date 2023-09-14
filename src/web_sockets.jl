@@ -202,7 +202,7 @@ function recv_one_frame(connection)
 
     if result == CURLE_AGAIN
         sleep_dt = 0.01
-        @debug error_message sleep_dt
+        @debug curl_code_to_string(result) sleep_dt
         sleep(sleep_dt)
         return recv_one_frame(connection)
     end
