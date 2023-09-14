@@ -1,9 +1,9 @@
 """
     Connection
 
-active connection using web sockets
+A connection to server via web socket protocol.
 
-see also [`send`](@ref), [`receive`](@ref), [`isopen`](@ref)
+See also [`send`](@ref), [`receive`](@ref), [`isopen`](@ref)
 
 # Usage
 ```julia
@@ -33,8 +33,6 @@ Base.isopen(c::Connection) = c.isopen
 
 """
     close(c::Connection)
-
-Close connection and cleanup.
 """
 function Base.close(c::Connection, message="close")
     if !isopen(c)
@@ -67,9 +65,18 @@ end
 
 
 """
-    open_connection(url; headers, query, interface, timeout, retries) -> Connection
+    open_connection(url; <keyword arguments>) -> Connection
 
 Connect to a web socket server.
+
+# Keyword Arguments
+* `headers = Pair{String, String}[]`. Any iterable container of `Pair{String, String}`.
+* `query = nothing`. A string or pairs of strings. Automatic url encoding.
+* `interface = nothing`. Outgoing network interface. Interface name, an IP address, or a host name.
+* `connect_timeout = 60`. Abort initial request after timeout is reached.
+* `proxy = nothing`. Unsupported.
+* `verbose = false`. Show libcurl verbose messages.
+* `isdeflate = false`. Decompress messages from server using deflate protocol.
 """
 function open_connection(url::AbstractString; 
     headers = Header[], 
@@ -95,7 +102,7 @@ function open_connection(url::AbstractString;
 
     # perform(rp, connect_timeout, retries)
     result = curl_easy_perform(rp.easy_handle)
-    result != CURLE_OK && print_curl_error(result, error_buffer)
+    result != CURLE_OK && raise_curl_error(result, error_buffer)
 
     # if not reset, then connection will be broken after connect_timeout seconds
     set_timeout(rp.easy_handle, 0)
@@ -110,27 +117,28 @@ end
 
 
 """
-    websocket(url; headers, query, interface, timeout, retries) -> Connection
+    websocket([handle,] url; <keyword arguments>) -> Connection
 
 Connect to a web socket server, run `handle` on connection, then close connection.
 
-# Arguments
-* `handle`: function to call on open connection
-* `url`: a string containing url
-* `headers`: an iterable container of `Pair{String, String}`
-* `query`: an iterable container of `Pair{String, String}`
-* `connect_timeout`: abort request after `read_timeout` seconds
-* `read_timeout`: unsupported
-* `interface`: outgoing network interface. Interface name, an IP address, or a host name.
-* `proxy`: unsupported
+# Keyword Arguments
+* `headers = Pair{String, String}[]`. Any iterable container of `Pair{String, String}`.
+* `query = nothing`. A string or pairs of strings. Automatic url encoding.
+* `interface = nothing`. Outgoing network interface. Interface name, an IP address, or a host name.
+* `connect_timeout = 60`. Abort initial request after timeout is reached.
+* `proxy = nothing`. Unsupported.
+* `verbose = false`. Show libcurl verbose messages.
+* `isdeflate = false`. Decompress messages from server using deflate protocol.
 
 # Example
 ```
 websocket(url; ...) do connection
     # your code
 end
-```
 
+f(connection) = # your code
+websocket(f, url; ...)
+```
 """
 function websocket(handle, url::AbstractString; 
     headers = Header[], 
@@ -148,12 +156,20 @@ end
 
 
 """
-    send(connection, message)
+    send(connection, message; flags)
 
 Send `message` to web socket.
 Close `connection` on error.
+
+Use `String` as message for text and `Vector{UInt8}` for binary data.
+`flags` are set automatically based on message type. See [curl docs](https://curl.se/libcurl/c/curl_ws_send.html) for possible values.
+
+# Example
+```julia
+HttpClient.send(connection, "Hello!")
+```
 """
-function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_TEXT)
+function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_BINARY)
     easy_handle = connection.pointers.easy_handle
     sent = Ref{Csize_t}(0)
     result = curl_ws_send(
@@ -166,7 +182,7 @@ function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_TEXT)
     )
     if result != CURLE_OK
         connection.isopen = false
-        print_curl_error(result, connection.error_buffer)
+        raise_curl_error(result, connection.error_buffer)
     end
     return true
 end
@@ -184,37 +200,37 @@ function recv_one_frame(connection)
     buffer = zeros(UInt8, buffer_size)
     result = curl_ws_recv(easy_handle, buffer, buffer_size, received, meta_ptr)
 
+    if result == CURLE_AGAIN
+        sleep_dt = 0.01
+        @debug error_message sleep_dt
+        sleep(sleep_dt)
+        return recv_one_frame(connection)
+    end
+
     if result != CURLE_OK
-        message = ""
-        frame = curl_ws_frame(0, 0, 0, 0, 0)
-        error_message = curl_code_to_string(result)
-        error_message2 = connection.error_buffer |> pointer |> unsafe_string
-        @error "curl_ws_recv" error_message error_message2
-        return result, message, frame
+        connection.isopen = false
+        raise_curl_error(result, connection.error_buffer)
     end
     
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])
     frame = unsafe_load(meta_ptr[1], 1)
-    return result, message, frame
+    return message, frame
 end
 
 
-function receive_any(connection)
-    result, full_message, frame = recv_one_frame(connection)
-    while result == CURLE_OK && frame.bytesleft > 0
-        result, message, frame = recv_one_frame(connection)
-        full_message *= message
-    end
+"""
+    receive_any(connection) -> message, message_type
 
-    if result == CURLE_AGAIN
-        error_str = curl_code_to_string(result)
-        sleep_time = 1
-        warn_str = error_str * ": retry in $sleep_time second"
-        @warn warn_str full_message
-        sleep(sleep_time)
-        return receive_any(connection)
-    elseif result != CURLE_OK
-        connection.isopen = false
+Receive any message from server and don't perform any control actions.
+Possible message types are text, binary, ping, pong, close, missing.
+
+User is responsible for handling control messages.
+"""
+function receive_any(connection)
+    full_message, frame = recv_one_frame(connection)
+    while frame.bytesleft > 0
+        message, frame = recv_one_frame(connection)
+        full_message *= message
     end
 
     if (frame.flags & CURLWS_PING) != 0
@@ -235,15 +251,22 @@ end
 
 
 """
-    receive(connection) -> data
+    receive(connection) -> message
 
-Receive message from web socket. Close `connection` on error.
+Receive message from web socket while handling all control messages. 
+Close `connection` on error.
+
+To monitor control messages, you can display debug messages via `ENV["JULIA_DEBUG"] = "HttpClient"`
 """
 function receive(connection)
     message, message_type = receive_any(connection)
     if message_type ∉ ("text", "binary")
-        @debug "receive $message_type message"
-        return receive(connection)
+        control_message_handler(message, message_type, connection)
+        if isopen(connection)
+            return receive(connection)
+        else
+            return message
+        end
     end
     if connection.isdeflate
         message = decompress(message)
@@ -252,20 +275,56 @@ function receive(connection)
 end
 
 
+function control_message_handler(message, message_type, connection)
+    if message_type == "ping"
+        @debug "Received ping message, send pong message"
+        send_pong(connection, message)
+    elseif message_type == "pong"
+        @debug "Received pong message"
+    elseif message_type == "close"
+        @debug "Server closed connection"
+        close(connection)
+    elseif message_type == "missing"
+        @warn "Received unknown message type, skipping"
+    else
+        error("Unsupported message type")
+    end
+end
+
+
+"""
+    send_ping(connection, message = "foo")
+
+Send ping message to a server.
+
+*WARNING* empty message may close connection.
+"""
 function send_ping(connection, message = "foo")
     send(connection, message; flags = CURLWS_PING)
 end
 
 
+"""
+    send_pong(connection, message = "foo")
+
+Send pong message to a server.
+
+*WARNING* empty message may close connection.
+"""
 function send_pong(connection, message = "foo")
     send(connection, message; flags = CURLWS_PONG)
 end
 
 
+"""
+    receive_pong(connection, message = "foo") -> ispong, data
+
+Try to receive pong message. Warning if receive not pong. Error if receive wrong message.
+"""
 function receive_pong(connection, message = "foo")
     data, message_type = receive_any(connection)
     if message_type != "pong"
-        @warn "receive_pong: receive data"
+        @warn "receive_pong: expected pong, but received data"
         return false, data
     end
     if data != message
