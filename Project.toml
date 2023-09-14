@@ -1,7 +1,7 @@
 name = "HttpClient"
 uuid = "a8bcf8b1-64b8-41f7-8d00-5e694f9aa795"
 authors = ["Samarin Aleksei <liotbiu1@gmail.com> and contributors"]
-version = "1.6.0-DEV"
+version = "1.7.0-DEV"
 
 [deps]
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"

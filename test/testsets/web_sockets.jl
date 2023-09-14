@@ -1,8 +1,11 @@
 @testset "web sockets" begin
 
 url_socketsbay = "wss://socketsbay.com/wss/v2/1/d5da93e90d8b8fb64d42d3e65b8fd68d/"
-# url_binance = "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
+url_binance_stream = "wss://stream.binance.com:9443/stream?streams=adausdt@depth20@100ms/btcusdt@depth20@100ms"
 url_binance = "wss://ws-api.binance.com:443/ws-api/v3"
+
+
+
 ping_body = """{  "id": "922bcc6e-9de8-440d-9e84-7c80933a8d0d",  "method": "ping"}"""
 
 
@@ -130,5 +133,22 @@ end
     end
 end
 
+
+@testset "close connection" begin
+    HttpClient.websocket(url_binance_stream) do connection
+        while isopen(connection)
+            HttpClient.send_ping(connection)
+            HttpClient.receive(connection)
+        end
+    end
+end
+
+
+# @testset "receive ping" begin
+#     HttpClient.websocket(url_binance) do connection
+#         message, message_type = HttpClient.receive_any(connection)
+#         @test message_type == "ping"
+#     end
+# end
 
 end # testset web sockets
