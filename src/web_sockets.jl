@@ -149,8 +149,21 @@ function websocket(handle, url::AbstractString;
     verbose = false,
     isdeflate = false
     )
-    connection = open_connection(url; headers, query, interface, connect_timeout, proxy, verbose, isdeflate)
+    connection = open_connection(url; 
+        headers, 
+        query, 
+        interface, 
+        connect_timeout, 
+        proxy, 
+        verbose, 
+        isdeflate
+    )
+    ping_timer = Timer(0; interval = 60) do timer
+        send_ping(connection)
+    end
+    wait(ping_timer)
     handle(connection)
+    close(ping_timer)
     close(connection, "close")
 end
 
@@ -227,6 +240,7 @@ Possible message types are text, binary, ping, pong, close, missing.
 User is responsible for handling control messages.
 """
 function receive_any(connection)
+    yield()
     full_message, frame = recv_one_frame(connection)
     while frame.bytesleft > 0
         message, frame = recv_one_frame(connection)

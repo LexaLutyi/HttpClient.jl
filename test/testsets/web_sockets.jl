@@ -68,9 +68,8 @@ end
 
 @testset "Ping pong" begin
     HttpClient.websocket(url_socketsbay, connect_timeout=10) do connection
-        @test HttpClient.send_ping(connection, "test")
         message, message_type = HttpClient.receive_any(connection)
-        @test message == "test"
+        @test message == "foo"
         @test message_type == "pong"
 
         @test HttpClient.send_ping(connection, "test2")
@@ -90,6 +89,11 @@ end
 
     HttpClient.websocket(url_binance; headers, connect_timeout=10) do connection
         HttpClient.send_pong(connection)
+
+        data, message_type = HttpClient.receive_any(connection)
+        @test message_type == "pong"
+        @test data == "foo"
+        
         sleep(1)
         HttpClient.send(connection, ping_body)
         data, message_type = HttpClient.receive_any(connection)
@@ -107,6 +111,10 @@ end
         url_binance;
         headers,
     ) do connection
+        message, message_type = HttpClient.receive_any(connection)
+        @test message == "foo"
+        @test message_type == "pong"
+
         HttpClient.send(connection, ping_body)
         deflate_message, _ = HttpClient.receive_any(connection)
         message = HttpClient.decompress(deflate_message)
@@ -144,11 +152,11 @@ end
 end
 
 
-# @testset "receive ping" begin
-#     HttpClient.websocket(url_binance) do connection
-#         message, message_type = HttpClient.receive_any(connection)
-#         @test message_type == "ping"
-#     end
-# end
+@testset "receive pong" begin
+    HttpClient.websocket(url_binance) do connection
+        message, message_type = HttpClient.receive_any(connection)
+        @test message_type == "pong"
+    end
+end
 
 end # testset web sockets
