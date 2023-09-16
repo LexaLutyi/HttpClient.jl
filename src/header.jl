@@ -28,10 +28,17 @@ function get_headers(curl)
 end
 
 
-function set_headers(curl, headers)
-    list = Ptr{Cvoid}(0)
+function set_headers(rp::RequestPointers, headers)
+    list = rp.slist
+    curl = rp.easy_handle
     for (key, value) in headers
-        list = curl_slist_append(list, "$(key): $(value)")
+        temp = curl_slist_append(list, "$(key): $(value)")
+        if temp == C_NULL
+            curl_slist_free_all(list)
+            error("HttpClient: Error appending headers")
+        else
+            list = temp
+        end
     end
     @curlok curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list)
 end

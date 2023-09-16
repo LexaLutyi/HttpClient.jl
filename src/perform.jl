@@ -6,6 +6,7 @@ end
 
 
 function perform(rp, timeout, retries)
+    error_buffer = set_error_buffer(rp.easy_handle)
     multi_init(rp)
     @curlok curl_multi_add_handle(rp.multi_handle, rp.easy_handle)
 
@@ -25,17 +26,14 @@ function perform(rp, timeout, retries)
     while msgs_in_queue[] > 0
         message_ptr = curl_multi_info_read(rp.multi_handle, msgs_in_queue)
         if message_ptr == C_NULL
-            error("No messages")
+            error("HttpClient: Error reading multi handle")
         end
         message = unsafe_load(Ptr{CurlMultiMessage}(message_ptr), 1)
-        @curlok message.result
+        if message.result != CURLE_OK
+            raise_curl_error(message.result, error_buffer)
+        end
     end
 
     @curlok curl_multi_remove_handle(rp.multi_handle, rp.easy_handle)
-
-    # rp.multi_handle
-    # retry(
-    #     curl -> HttpClient.@curlok(curl_easy_perform(curl)); 
-    #     delays=fill(timeout, retries)
-    # )(curl)
+    remove_error_buffer(rp.easy_handle)
 end

@@ -2,7 +2,10 @@
     
     @testset "200" begin
         url = "https://reqbin.com/echo/post/json"
-        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
+        headers = [
+            "Content-Type" => "application/json", 
+            "User-Agent" => "http-julia"
+        ]
         body = """
         {
             "Id": 12345,
@@ -23,7 +26,10 @@
     @testset "clickhouse" begin
         url = "https://play.clickhouse.com/"
         query = Dict("user" => "explorer")
-        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
+        headers = [
+            "Content-Type" => "application/json", 
+            "User-Agent" => "http-julia"
+        ]
         body = "show databases"
     
         databases = """
@@ -48,7 +54,8 @@
                 reqres_test.interface,
                 reqres_test.read_timeout,
                 reqres_test.retries,
-                body = reqres_test.body
+                body = reqres_test.body,
+                status_exception = false
             )
     
             @test request.status == reqres_test.status

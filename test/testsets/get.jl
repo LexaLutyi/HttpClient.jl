@@ -10,7 +10,6 @@
     
         @test request.status == 200
     
-        # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
         @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
     
         @test url == url_bkp
@@ -19,18 +18,13 @@
     
     @testset "404" begin
         url = "https://www.google.com/404"
-        url_bkp = deepcopy(url)
-        request = HttpClient.get(url)
-    
-        @test typeof(request.response) == String
-        @test length(request.response) > 0
-    
+        request = HttpClient.get(url; status_exception = false)
+   
         @test request.status == 404
     
-        # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
         @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
-    
-        @test url == url_bkp
+
+        @test_throws "StatusError: 404" HttpClient.get(url)
     end
     
     
@@ -50,25 +44,21 @@
     
     @testset "No protocol" begin
         url = "example.com"
-        # TODO should work without protocol or raise meaningful error
-        # @test_throws "Out of memory" HttpClient.get(url)
         @test HttpClient.get(url).status == 200
     end
     
     
     @testset "Headers" begin
         url = "https://reqbin.com/echo/get/json"
-        headers = Dict(
+        headers = [
             "Content-Type" => "application/json",
             "User-Agent" => "http-julia"
-        )
+        ]
         request = HttpClient.get(url; headers)
         @test caseless_key_check(request.headers, "Content-Type", "application/json")
-        # @test request.headers["Content-Type"] == "application/json"
     
-        request = HttpClient.get(url)
+        request = HttpClient.get(url; status_exception=false)
         @test caseless_key_check(request.headers, "Content-Type", "text/html; charset=UTF-8")
-        # @test request.headers["Content-Type"] == "text/html; charset=UTF-8"
     end
     
     
@@ -124,7 +114,8 @@
                 reqres_test.query,
                 reqres_test.interface,
                 reqres_test.read_timeout,
-                reqres_test.retries
+                reqres_test.retries,
+                status_exception=false
             )
     
             @test request.status == reqres_test.status
@@ -149,4 +140,33 @@
     #     @test read_timeout * (retries) < t < 2 * read_timeout * (retries + 1)
     # end
     
+    @testset "Interface" begin
+        @test_throws "TypeError" HttpClient.request(
+            "get",
+            "https://api.crossref.org/members";
+            headers = Dict("User-Agent" => "http-julia")
+        )
+
+        headers = ["User-Agent" => "http-julia"]
+        req = HttpClient.request("Get", "https://api.crossref.org/members";
+            headers,
+            query = ["rows=0"],
+            body = nothing,
+            connect_timeout = 10.2,
+            read_timeout = 300.,
+            interface = "0.0.0.0",
+            proxy = "",
+            retries = 10,
+            status_exception = true,
+            accept_encoding = "gzip",
+            ssl_verifypeer = true
+        )
+        @test req.status == 200
+    end
+
+    @testset "Redirection" begin
+        request = HttpClient.get("google.co")
+        @test request.status == 200
+    end
+
 end # Get

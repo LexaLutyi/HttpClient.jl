@@ -47,12 +47,6 @@ end
 set_connect_only(easy_handle) = @curlok curl_easy_setopt(easy_handle, CURLOPT_CONNECT_ONLY, 2)
 set_verbose(easy_handle, verbose) = @curlok curl_easy_setopt(easy_handle, CURLOPT_VERBOSE, verbose ? 1 : 0)
 
-function set_error_buffer(easy_handle)
-    error_buffer = zeros(UInt8, CURL_ERROR_SIZE)
-    @curlok curl_easy_setopt(easy_handle, CURLOPT_ERRORBUFFER, error_buffer)
-    error_buffer
-end
-
 
 function ispermessage_deflate(headers)
     for (key, value) in headers
@@ -91,7 +85,7 @@ function open_connection(url::AbstractString;
     easy_init(rp)
 
     full_url = set_url(rp, url, query)
-    set_headers(rp.easy_handle, headers)
+    set_headers(rp, headers)
     set_interface(rp.easy_handle, interface)
     set_timeout(rp.easy_handle, connect_timeout)
     set_ssl(rp.easy_handle)
@@ -141,13 +135,14 @@ websocket(f, url; ...)
 ```
 """
 function websocket(handle, url::AbstractString; 
-    headers = Header[], 
+    headers::Vector{Header} = Header[], 
     query = nothing, 
     interface::Union{String,Nothing} = nothing, 
-    connect_timeout = 60, 
+    connect_timeout::Real = 60, 
+    read_timeout::Real = 300,
     proxy::Union{String,Nothing} = nothing,
-    verbose = false,
-    isdeflate = false
+    verbose::Bool = false,
+    isdeflate::Bool = false
     )
     connection = open_connection(url; 
         headers, 

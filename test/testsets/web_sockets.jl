@@ -67,6 +67,7 @@ end
 
 
 @testset "Ping pong" begin
+    sleep(1)
     HttpClient.websocket(url_socketsbay, connect_timeout=10) do connection
         message, message_type = HttpClient.receive_any(connection)
         @test message == "foo"
@@ -158,5 +159,25 @@ end
         @test message_type == "pong"
     end
 end
+
+
+@testset "Interface" begin
+    headers = Dict("User-Agent" => "http-julia")
+    handle = c -> nothing
+    @test_throws "TypeError" HttpClient.websocket(handle, url_binance; headers)
+
+    headers = ["User-Agent" => "http-julia"]
+    HttpClient.websocket(
+        handle,
+        url_binance;
+        headers,
+        query = [],
+        connect_timeout = 10.,
+        read_timeout = 20.,
+        interface = "0.0.0.0",
+        proxy = ""
+    )
+end
+
 
 end # testset web sockets
