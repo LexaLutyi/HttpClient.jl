@@ -161,7 +161,7 @@ end
 end
 
 
-@testset "Interface" begin
+@testset "Public interface" begin
     headers = Dict("User-Agent" => "http-julia")
     handle = c -> nothing
     @test_throws "TypeError" HttpClient.websocket(handle, url_binance; headers)

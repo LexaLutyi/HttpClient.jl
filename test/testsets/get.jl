@@ -140,7 +140,7 @@
     #     @test read_timeout * (retries) < t < 2 * read_timeout * (retries + 1)
     # end
     
-    @testset "Interface" begin
+    @testset "Public interface" begin
         @test_throws "TypeError" HttpClient.request(
             "get",
             "https://api.crossref.org/members";
