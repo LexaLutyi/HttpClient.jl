@@ -1,8 +1,10 @@
 include("reqres_responses.jl")
 
+const Header = Pair{String, String}
+
 @kwdef struct ReqresTest{Query, Body}
     url::String
-    headers::Dict{String, String} = Dict()
+    headers::Vector{Header} = Header[]
     query::Query = nothing
     interface::String = ""
     read_timeout::Int = 0
@@ -14,10 +16,10 @@ include("reqres_responses.jl")
     response::String
 end
 
-headers = Dict(
+headers = [
     "Content-Type" => "application/json",
     "User-Agent" => "http-julia"
-)
+]
 
 reqres_test_get = Dict{String, ReqresTest}()
 

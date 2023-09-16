@@ -22,3 +22,15 @@ function raise_curl_error(code, error_buffer::Vector{UInt8})
     str = GC.@preserve error_buffer unsafe_string(pointer(error_buffer))
     raise_curl_error(code, str)
 end
+
+
+function set_error_buffer(easy_handle)
+    error_buffer = zeros(UInt8, CURL_ERROR_SIZE)
+    @curlok curl_easy_setopt(easy_handle, CURLOPT_ERRORBUFFER, error_buffer)
+    error_buffer
+end
+
+
+function remove_error_buffer(easy_handle)
+    @curlok curl_easy_setopt(easy_handle, CURLOPT_ERRORBUFFER, C_NULL)
+end

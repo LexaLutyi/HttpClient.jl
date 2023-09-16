@@ -51,44 +51,6 @@ function Base.show(io::IO, r::Request)
 end
 
 
-@kwdef mutable struct RequestPointers
-    easy_handle::Ptr{CURL} = C_NULL
-    multi_handle::Ptr{CURLM} = C_NULL
-    curl_url::Ptr{CURLU} = C_NULL
-    function RequestPointers(easy_handle, multi_handle, curl_url)
-        x = new(easy_handle, multi_handle, curl_url)
-        finalizer(x) do x
-            # ccall(:jl_safe_printf, Cvoid, (Cstring, Cstring), "Finalizing %s.\n", repr(x))
-            if x.easy_handle != C_NULL
-                curl_easy_cleanup(x.easy_handle)
-            end
-            if x.curl_url != C_NULL
-                curl_url_cleanup(x.curl_url)
-            end
-            if x.multi_handle != C_NULL
-                curl_multi_cleanup(x.multi_handle)
-            end
-        end
-    end
-end
-
-
-function easy_init(rp::RequestPointers)
-    rp.easy_handle = curl_easy_init()
-    if rp.easy_handle == C_NULL
-        error("HttpClient: Error initializing easy-handle")
-    end
-end
-
-
-function multi_init(rp::RequestPointers)
-    rp.multi_handle = curl_multi_init()
-    if rp.multi_handle == C_NULL
-        error("HttpClient: Error initializing multi-handle")
-    end
-end
-
-
 """
     request(method::AbstractString, url::AbstractString, <keyword arguments>) -> Request
 Send a HTTP Request Message and receive a HTTP Response Message.
@@ -101,9 +63,9 @@ HttpClient.get("https://example.com")
 ```
 # Arguments
 * `method`: get, post, put, delete
-* `url`: if no scheme, then https
-* `headers`: iterable container of `Pair{String, String}`
-* `query`: iterable container of `Pair{String, String}`
+* `url`: default scheme is https
+* `headers::Vector{Pair{String, String}} = []`
+* `query = nothing`: a full query string or container of key-value pairs
 * `body`: `nothing` or `String`
 * `connect_timeout`: unsupported
 * `read_timeout`: abort request after `read_timeout` seconds
@@ -117,7 +79,7 @@ HttpClient.get("https://example.com")
 function request(
     method::AbstractString,
     url::AbstractString;
-    headers = Pair{String, String}[],
+    headers::Vector{Header} = Header[],
     query = nothing,
     body = nothing,
     connect_timeout::Real = 60,
@@ -135,10 +97,11 @@ function request(
 
     full_url = set_url(rp, url, query)
     response = set_response(rp.easy_handle)
-    set_headers(rp.easy_handle, headers)
+    set_headers(rp, headers)
     set_interface(rp.easy_handle, interface)
     set_timeout(rp.easy_handle, read_timeout)
     set_ssl(rp.easy_handle)
+    set_follow_location(rp.easy_handle)
 
     if lowercase(method) == "post"
         set_body(rp.easy_handle, body)
@@ -157,6 +120,15 @@ function request(
 
     http_code = get_http_code(rp.easy_handle)
     response_string = response_as_string(response)
+
+    if status_exception && http_code >= 300
+        error(
+            "StatusError: ", http_code, 
+            ". Full url: ", full_url,
+            ". Response: ", response_string
+        )
+    end
+
     headers = get_headers(rp.easy_handle)
 
     Request(full_url, response_string, http_code, headers)

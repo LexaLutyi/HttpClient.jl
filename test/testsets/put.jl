@@ -9,7 +9,8 @@
                 reqres_test.interface,
                 reqres_test.read_timeout,
                 reqres_test.retries,
-                body = reqres_test.body
+                body = reqres_test.body,
+                status_exception = false
             )
     
             @test request.status == reqres_test.status

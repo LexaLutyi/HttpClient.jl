@@ -2,7 +2,10 @@
 
     @testset "reqbin.com" begin
         url = "https://reqbin.com/echo/delete/json"
-        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
+        headers = [
+            "Content-Type" => "application/json", 
+            "User-Agent" => "http-julia"
+        ]
         request = HttpClient.delete(url; headers)
         @test request.status == 200
         @test request.response == "{\"success\":\"true\"}\n"
@@ -10,8 +13,15 @@
 
     @testset "play.clickhouse.com" begin
         url = "https://play.clickhouse.com/"
-        headers = Dict("Content-Type" => "application/json", "User-Agent" => "http-julia")
-        request = HttpClient.delete(url; headers, body = "play")
+        headers = [
+            "Content-Type" => "application/json", 
+            "User-Agent" => "http-julia"
+        ]
+        request = HttpClient.delete(url; 
+            headers, 
+            body = "play",
+            status_exception = false
+        )
         @test request.status == 501
         @test request.response == ""
     end
@@ -25,7 +35,8 @@
                 reqres_test.interface,
                 reqres_test.read_timeout,
                 reqres_test.retries,
-                body = reqres_test.what_to_delete
+                body = reqres_test.what_to_delete,
+                status_exception = false
             )
     
             @test request.status == reqres_test.status
