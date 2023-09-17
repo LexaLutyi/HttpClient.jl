@@ -20,6 +20,7 @@ function easy_init(rp::RequestPointers)
     if rp.easy_handle == C_NULL
         error("HttpClient: Error initializing easy-handle")
     end
+    return nothing
 end
 
 
@@ -28,4 +29,5 @@ function multi_init(rp::RequestPointers)
     if rp.multi_handle == C_NULL
         error("HttpClient: Error initializing multi-handle")
     end
+    return nothing
 end

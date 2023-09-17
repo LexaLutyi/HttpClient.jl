@@ -48,6 +48,7 @@ function Base.show(io::IO, r::Request)
     println(io, "  status = $(r.status)")
     println(io, "  response = \"\"\"\n$(r.response)\n\"\"\"")
     println(io, "  headers = $(r.headers)")
+    return nothing
 end
 
 
@@ -90,14 +91,14 @@ function request(
     status_exception::Bool = true,
     accept_encoding::String = "gzip",
     ssl_verifypeer::Bool = true,
-)
+    )
     rp = RequestPointers()
 
     easy_init(rp)
 
-    full_url = set_url(rp, url, query)
+    rp.curl_url, full_url = set_url(rp.easy_handle, url, query)
     response = set_response(rp.easy_handle)
-    set_headers(rp, headers)
+    rp.slist = set_headers(rp.easy_handle, headers)
     set_interface(rp.easy_handle, interface)
     set_timeout(rp.easy_handle, read_timeout)
     set_ssl(rp.easy_handle)
@@ -105,11 +106,14 @@ function request(
 
     if lowercase(method) == "post"
         set_body(rp.easy_handle, body)
+
     elseif lowercase(method) == "put"
         set_body(rp.easy_handle, body)
         set_put(rp.easy_handle)
+
     elseif lowercase(method)== "delete"
         set_delete(rp.easy_handle, body)
+
     elseif lowercase(method) == "get"
         # nothing
     else
@@ -123,7 +127,7 @@ function request(
 
     if status_exception && http_code >= 300
         error(
-            "StatusError: ", http_code, 
+            "StatusError: ", http_code,
             ". Full url: ", full_url,
             ". Response: ", response_string
         )
@@ -131,5 +135,5 @@ function request(
 
     headers = get_headers(rp.easy_handle)
 
-    Request(full_url, response_string, http_code, headers)
+    return Request(full_url, response_string, http_code, headers)
 end

@@ -36,21 +36,19 @@ Base.isopen(c::Connection) = c.isopen
 """
 function Base.close(c::Connection, message="close")
     if !isopen(c)
-        return
+        return nothing
     end
     send(c, message, flags=CURLWS_CLOSE)
     c.isopen = false
-    return
+    return nothing
 end
-
-
-set_connect_only(easy_handle) = @curlok curl_easy_setopt(easy_handle, CURLOPT_CONNECT_ONLY, 2)
-set_verbose(easy_handle, verbose) = @curlok curl_easy_setopt(easy_handle, CURLOPT_VERBOSE, verbose ? 1 : 0)
 
 
 function ispermessage_deflate(headers)
     for (key, value) in headers
-        if lowercase(key) == "sec-websocket-extensions" && lowercase(value) == "permessage-deflate"
+        A = lowercase(key) == "sec-websocket-extensions"
+        B = lowercase(value) == "permessage-deflate"
+        if A && B
             return true
         end
     end
@@ -72,11 +70,11 @@ Connect to a web socket server.
 * `verbose = false`. Show libcurl verbose messages.
 * `isdeflate = false`. Decompress messages from server using deflate protocol.
 """
-function open_connection(url::AbstractString; 
-    headers = Header[], 
-    query = nothing, 
-    interface::Union{String,Nothing} = nothing, 
-    connect_timeout = 60, 
+function open_connection(url::AbstractString;
+    headers = Header[],
+    query = nothing,
+    interface::Union{String,Nothing} = nothing,
+    connect_timeout = 60,
     proxy::Union{String,Nothing} = nothing,
     verbose = false,
     isdeflate = false
@@ -84,8 +82,8 @@ function open_connection(url::AbstractString;
     rp = RequestPointers()
     easy_init(rp)
 
-    full_url = set_url(rp, url, query)
-    set_headers(rp, headers)
+    rp.curl_url, full_url = set_url(rp.easy_handle, url, query)
+    rp.slist = set_headers(rp.easy_handle, headers)
     set_interface(rp.easy_handle, interface)
     set_timeout(rp.easy_handle, connect_timeout)
     set_ssl(rp.easy_handle)
@@ -96,17 +94,18 @@ function open_connection(url::AbstractString;
 
     # perform(rp, connect_timeout, retries)
     result = curl_easy_perform(rp.easy_handle)
-    result != CURLE_OK && raise_curl_error(result, error_buffer)
+    result != CURLE_OK && error(full_error_message(result, error_buffer))
 
     # if not reset, then connection will be broken after connect_timeout seconds
     set_timeout(rp.easy_handle, 0)
 
     if !isdeflate && ispermessage_deflate(headers)
-        @info "Setting isdeflate=true. Set it manually via keyword argument to suppress this message."
+        @info "Setting isdeflate=true.
+        Set it manually via keyword argument to suppress this message."
         isdeflate = true
     end
 
-    Connection(rp, full_url, true, error_buffer, isdeflate)
+    return Connection(rp, full_url, true, error_buffer, isdeflate)
 end
 
 
@@ -118,7 +117,8 @@ Connect to a web socket server, run `handle` on connection, then close connectio
 # Keyword Arguments
 * `headers = Pair{String, String}[]`. Any iterable container of `Pair{String, String}`.
 * `query = nothing`. A string or pairs of strings. Automatic url encoding.
-* `interface = nothing`. Outgoing network interface. Interface name, an IP address, or a host name.
+* `interface = nothing`. Outgoing network interface.
+Interface name, an IP address, or a host name.
 * `connect_timeout = 60`. Abort initial request after timeout is reached.
 * `proxy = nothing`. Unsupported.
 * `verbose = false`. Show libcurl verbose messages.
@@ -134,23 +134,23 @@ f(connection) = # your code
 websocket(f, url; ...)
 ```
 """
-function websocket(handle, url::AbstractString; 
-    headers::Vector{Header} = Header[], 
-    query = nothing, 
-    interface::Union{String,Nothing} = nothing, 
-    connect_timeout::Real = 60, 
+function websocket(handle, url::AbstractString;
+    headers::Vector{Header} = Header[],
+    query = nothing,
+    interface::Union{String,Nothing} = nothing,
+    connect_timeout::Real = 60,
     read_timeout::Real = 300,
     proxy::Union{String,Nothing} = nothing,
     verbose::Bool = false,
     isdeflate::Bool = false
     )
-    connection = open_connection(url; 
-        headers, 
-        query, 
-        interface, 
-        connect_timeout, 
-        proxy, 
-        verbose, 
+    connection = open_connection(url;
+        headers,
+        query,
+        interface,
+        connect_timeout,
+        proxy,
+        verbose,
         isdeflate
     )
     ping_timer = Timer(0; interval = 60) do timer
@@ -160,6 +160,7 @@ function websocket(handle, url::AbstractString;
     handle(connection)
     close(ping_timer)
     close(connection, "close")
+    return nothing
 end
 
 
@@ -170,7 +171,8 @@ Send `message` to web socket.
 Close `connection` on error.
 
 Use `String` as message for text and `Vector{UInt8}` for binary data.
-`flags` are set automatically based on message type. See [curl docs](https://curl.se/libcurl/c/curl_ws_send.html) for possible values.
+`flags` are set automatically based on message type.
+See [curl docs](https://curl.se/libcurl/c/curl_ws_send.html) for possible values.
 
 # Example
 ```julia
@@ -181,11 +183,11 @@ function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_BINARY)
     easy_handle = connection.pointers.easy_handle
     sent = Ref{Csize_t}(0)
     result = curl_ws_send(
-        easy_handle, 
-        length(message) == 0 ? C_NULL : message, 
-        length(message), 
-        sent, 
-        0, 
+        easy_handle,
+        length(message) == 0 ? C_NULL : message,
+        length(message),
+        sent,
+        0,
         flags
     )
     if result != CURLE_OK
@@ -196,8 +198,9 @@ function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_BINARY)
 end
 
 
-send(connection, message::AbstractString; flags=CURLWS_TEXT) = 
-    send(connection, Vector{UInt8}(message); flags)
+function send(connection, message::AbstractString; flags=CURLWS_TEXT)
+    return send(connection, Vector{UInt8}(message); flags)
+end
 
 
 function recv_one_frame(connection)
@@ -219,7 +222,7 @@ function recv_one_frame(connection)
         connection.isopen = false
         raise_curl_error(result, connection.error_buffer)
     end
-    
+
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])
     frame = unsafe_load(meta_ptr[1], 1)
     return message, frame
@@ -255,17 +258,19 @@ function receive_any(connection)
     else
         message_type = "missing"
     end
-    full_message, message_type
+
+    return full_message, message_type
 end
 
 
 """
     receive(connection) -> message
 
-Receive message from web socket while handling all control messages. 
+Receive message from web socket while handling all control messages.
 Close `connection` on error.
 
-To monitor control messages, you can display debug messages via `ENV["JULIA_DEBUG"] = "HttpClient"`
+To monitor control messages,
+you can display debug messages via `ENV["JULIA_DEBUG"] = "HttpClient"`
 """
 function receive(connection)
     message, message_type = receive_any(connection)
@@ -280,6 +285,7 @@ function receive(connection)
     if connection.isdeflate
         message = decompress(message)
     end
+
     return message
 end
 
@@ -298,6 +304,7 @@ function control_message_handler(message, message_type, connection)
     else
         error("Unsupported message type")
     end
+    return nothing
 end
 
 
@@ -309,7 +316,7 @@ Send ping message to a server.
 *WARNING* empty message may close connection.
 """
 function send_ping(connection, message = "foo")
-    send(connection, message; flags = CURLWS_PING)
+    return send(connection, message; flags = CURLWS_PING)
 end
 
 
@@ -321,7 +328,7 @@ Send pong message to a server.
 *WARNING* empty message may close connection.
 """
 function send_pong(connection, message = "foo")
-    send(connection, message; flags = CURLWS_PONG)
+    return send(connection, message; flags = CURLWS_PONG)
 end
 
 
@@ -337,7 +344,8 @@ function receive_pong(connection, message = "foo")
         return false, data
     end
     if data != message
-        error("HttpClient.pong: server return wrong message. Expected $(message), got $(data)")
+        error("HttpClient.pong: server return wrong message.
+        Expected $(message), got $(data)")
     end
-    true, data
+    return true, data
 end

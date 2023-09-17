@@ -21,7 +21,7 @@ function perform(rp, timeout, retries)
         @curlok curl_multi_perform(rp.multi_handle, still_running)
     end
 
-    
+
     msgs_in_queue = Ref{Cint}(1)
     while msgs_in_queue[] > 0
         message_ptr = curl_multi_info_read(rp.multi_handle, msgs_in_queue)
@@ -29,8 +29,9 @@ function perform(rp, timeout, retries)
             error("HttpClient: Error reading multi handle")
         end
         message = unsafe_load(Ptr{CurlMultiMessage}(message_ptr), 1)
-        if message.result != CURLE_OK
-            raise_curl_error(message.result, error_buffer)
+        result = message.result
+        if result != CURLE_OK
+            error(full_error_message(result, error_buffer))
         end
     end
 

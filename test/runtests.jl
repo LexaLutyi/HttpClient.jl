@@ -1,13 +1,9 @@
 using HttpClient
-using Test
 using JSON
 using Sockets
-using WebSockets
+using Test
 
 # ENV["JULIA_DEBUG"] = "HttpClient"
-
-include("reqres_tests.jl")
-
 
 function caseless_key_check(dict, key, value)
     for (k, v) in dict
@@ -19,7 +15,8 @@ function caseless_key_check(dict, key, value)
 end
 
 @testset "HttpClient.jl" begin
-    
+
+include("reqres_tests.jl")
 
 include("testsets/get.jl")
 include("testsets/post.jl")
@@ -28,7 +25,7 @@ include("testsets/put.jl")
 include("testsets/async.jl")
 
 # ! Don't work in git CI
-# include("testsets/web_sockets.jl")
+include("testsets/web_sockets.jl")
 
 # ! Don't work in test environment
 

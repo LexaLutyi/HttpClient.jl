@@ -1,8 +1,3 @@
-function set_put(curl)
-    @curlok curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT")
-end
-
-
 """
     put(url; <keyword arguments>) -> Request
 
@@ -27,7 +22,7 @@ julia> print(request.response)
 {"name":"morpheus","job":"zion resident","updatedAt":"2023-08-25T12:17:32.283Z"}
 ```
 """
-put(
+function put(
     url::AbstractString;
     headers = Pair{String, String}[],
     query = nothing,
@@ -40,18 +35,21 @@ put(
     status_exception::Bool = true,
     accept_encoding::String = "gzip",
     ssl_verifypeer::Bool = true,
-) = request(
-    "put",
-    url;
-    headers,
-    query,
-    body,
-    connect_timeout,
-    read_timeout,
-    interface,
-    proxy,
-    retries,
-    status_exception,
-    accept_encoding,
-    ssl_verifypeer
-)
+    )
+    req = request(
+        "put",
+        url;
+        headers,
+        query,
+        body,
+        connect_timeout,
+        read_timeout,
+        interface,
+        proxy,
+        retries,
+        status_exception,
+        accept_encoding,
+        ssl_verifypeer
+    )
+    return req
+end
