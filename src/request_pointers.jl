@@ -11,9 +11,9 @@
             curl_multi_cleanup(x.multi_handle)
             curl_slist_free_all(x.slist)
         end
+        return x
     end
 end
-
 
 function easy_init(rp::RequestPointers)
     rp.easy_handle = curl_easy_init()
@@ -22,7 +22,6 @@ function easy_init(rp::RequestPointers)
     end
     return nothing
 end
-
 
 function multi_init(rp::RequestPointers)
     rp.multi_handle = curl_multi_init()

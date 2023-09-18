@@ -4,13 +4,11 @@ function set_follow_location(easy_handle)
     return nothing
 end
 
-
 "Use for post or put request. Body is `String`, `Vector{UInt8}` or `Nothing`."
 function set_body(easy_handle, body::String)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_POSTFIELDS, body)
     return nothing
 end
-
 
 function set_body(easy_handle, body::Vector{UInt8})
     @curlok curl_easy_setopt(easy_handle, CURLOPT_POSTFIELDS, body)
@@ -18,9 +16,7 @@ function set_body(easy_handle, body::Vector{UInt8})
     return nothing
 end
 
-
 set_body(easy_handle, ::Nothing) = set_body(easy_handle, "")
-
 
 "Create vector of bytes and set it as error buffer."
 function set_error_buffer(easy_handle)
@@ -29,20 +25,17 @@ function set_error_buffer(easy_handle)
     return error_buffer
 end
 
-
 "Remove link to error buffer. Therefore buffer may be safely deleted now."
 function remove_error_buffer(easy_handle)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_ERRORBUFFER, C_NULL)
     return nothing
 end
 
-
 "Use for delete request."
 function set_delete(easy_handle, ::Nothing)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_CUSTOMREQUEST, "DELETE")
     return nothing
 end
-
 
 function set_delete(easy_handle, what::String)
     request = strip("DELETE $(what)")
@@ -56,8 +49,7 @@ function set_put(easy_handle)
     return nothing
 end
 
-
-"Return pointer, which must be manually freed."
+"Return pointer, which must be freed."
 function set_headers(easy_handle, headers::Vector{Header})
     list = Ptr{curl_slist}(0)
     for (key, value) in headers
@@ -73,7 +65,6 @@ function set_headers(easy_handle, headers::Vector{Header})
     return list
 end
 
-
 "Use nothing over empty string."
 function set_interface(easy_handle, interface::String)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_INTERFACE, interface)
@@ -85,7 +76,6 @@ function set_interface(easy_handle, ::Nothing)
     return nothing
 end
 
-
 """
     set_url(easy_handle, url, query) -> curl_url, full_url
 
@@ -96,6 +86,7 @@ function set_url(easy_handle, url, user_query)
     query = decode_query(user_query)
     c_url = make_curl_url(url, query)
 
+    # get full url from c_url
     c_full_url = [Ptr{UInt8}(0)]
     @curlok curl_url_get(c_url, CURLUPART_URL, c_full_url, 0)
     full_url = unsafe_string(c_full_url[1])
@@ -105,7 +96,6 @@ function set_url(easy_handle, url, user_query)
 
     return c_url, full_url
 end
-
 
 "Initialize callback and buffer for response message."
 function set_response(easy_handle)
@@ -120,7 +110,6 @@ function set_response(easy_handle)
     return response
 end
 
-
 function set_ssl(easy_handle)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_USE_SSL, CURLUSESSL_ALL)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_SSL_VERIFYHOST, 2)
@@ -129,12 +118,10 @@ function set_ssl(easy_handle)
     return nothing
 end
 
-
 function set_timeout(easy_handle, timeout::Integer)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_TIMEOUT, timeout)
     return nothing
 end
-
 
 function set_timeout(easy_handle, timeout::AbstractFloat)
     ms = round(Int, 1000 * timeout)
@@ -142,13 +129,11 @@ function set_timeout(easy_handle, timeout::AbstractFloat)
     return nothing
 end
 
-
 "Must be set for web socket."
 function set_connect_only(easy_handle)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_CONNECT_ONLY, 2)
     return nothing
 end
-
 
 function set_verbose(easy_handle, isverbose)
     @curlok curl_easy_setopt(easy_handle, CURLOPT_VERBOSE, isverbose ? 1 : 0)

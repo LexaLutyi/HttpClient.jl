@@ -7,7 +7,10 @@ For supported arguments see [`request`](@ref) function.
 # Example
 ```julia
 url = "https://reqres.in/api/users/2"
-headers = ["User-Agent" => "http-julia", "Content-Type" => "application/json"]
+headers = [
+    "User-Agent" => "http-julia",
+    "Content-Type" => "application/json"
+]
 request = HttpClient.delete(url; headers)
 
 @test request.status == 204

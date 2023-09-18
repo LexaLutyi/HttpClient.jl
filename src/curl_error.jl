@@ -1,6 +1,5 @@
 curl_code_to_string(code) = unsafe_string(curl_easy_strerror(code))
 
-
 """
     curlok(exp)
 
@@ -17,8 +16,12 @@ macro curlok(exp)
     end
 end
 
+"""
+    join_messages(code, error_buffer)
 
-function full_error_message(code, error_buffer)
+Join message associated with `code` and specific message from `error_buffer`.
+"""
+function join_messages(code, error_buffer)
     error_first = curl_code_to_string(code)
     error_second = String(error_buffer)
     return join([error_first, error_second], ": ")

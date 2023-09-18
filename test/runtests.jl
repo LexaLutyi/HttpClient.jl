@@ -16,17 +16,14 @@ end
 
 @testset "HttpClient.jl" begin
 
-include("reqres_tests.jl")
+    include("reqres_tests.jl")
 
-include("testsets/get.jl")
-include("testsets/post.jl")
-include("testsets/delete.jl")
-include("testsets/put.jl")
-include("testsets/async.jl")
+    include("testsets/get.jl")
+    include("testsets/post.jl")
+    include("testsets/delete.jl")
+    include("testsets/put.jl")
+    include("testsets/async.jl")
 
-# ! Don't work in git CI
-include("testsets/web_sockets.jl")
-
-# ! Don't work in test environment
-
+    # ! Binance tests don't work in git CI.
+    # include("testsets/web_sockets.jl")
 end
