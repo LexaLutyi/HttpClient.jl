@@ -1,7 +1,3 @@
-using Sockets
-using HttpClient
-using JSON
-
 @testset "Optional interface" begin
     query = Dict{String,Any}(
         "echo" => "你好嗎"

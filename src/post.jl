@@ -52,7 +52,7 @@ mgbench
 system
 ```
 """
-post(
+function post(
     url::AbstractString;
     headers = Pair{String, String}[],
     query = nothing,
@@ -65,18 +65,21 @@ post(
     status_exception::Bool = true,
     accept_encoding::String = "gzip",
     ssl_verifypeer::Bool = true,
-) = request(
-    "post",
-    url;
-    headers,
-    query,
-    body,
-    connect_timeout,
-    read_timeout,
-    interface,
-    proxy,
-    retries,
-    status_exception,
-    accept_encoding,
-    ssl_verifypeer
-)
+    )
+    req =  request(
+        "post",
+        url;
+        headers,
+        query,
+        body,
+        connect_timeout,
+        read_timeout,
+        interface,
+        proxy,
+        retries,
+        status_exception,
+        accept_encoding,
+        ssl_verifypeer
+    )
+    return req
+end

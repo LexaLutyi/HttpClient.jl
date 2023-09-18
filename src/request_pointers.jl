@@ -11,21 +11,22 @@
             curl_multi_cleanup(x.multi_handle)
             curl_slist_free_all(x.slist)
         end
+        return x
     end
 end
-
 
 function easy_init(rp::RequestPointers)
     rp.easy_handle = curl_easy_init()
     if rp.easy_handle == C_NULL
         error("HttpClient: Error initializing easy-handle")
     end
+    return nothing
 end
-
 
 function multi_init(rp::RequestPointers)
     rp.multi_handle = curl_multi_init()
     if rp.multi_handle == C_NULL
         error("HttpClient: Error initializing multi-handle")
     end
+    return nothing
 end

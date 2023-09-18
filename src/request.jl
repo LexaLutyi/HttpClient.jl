@@ -41,15 +41,14 @@ struct Request
     headers::Dict{String, String}
 end
 
-
 function Base.show(io::IO, r::Request)
     println(io, "HttpClient.Request")
     println(io, "  url = $(r.full_url)")
     println(io, "  status = $(r.status)")
     println(io, "  response = \"\"\"\n$(r.response)\n\"\"\"")
     println(io, "  headers = $(r.headers)")
+    return nothing
 end
-
 
 """
     request(method::AbstractString, url::AbstractString, <keyword arguments>) -> Request
@@ -90,46 +89,45 @@ function request(
     status_exception::Bool = true,
     accept_encoding::String = "gzip",
     ssl_verifypeer::Bool = true,
-)
+    )
     rp = RequestPointers()
-
     easy_init(rp)
 
-    full_url = set_url(rp, url, query)
+    rp.curl_url, full_url = set_url(rp.easy_handle, url, query)
     response = set_response(rp.easy_handle)
-    set_headers(rp, headers)
+    rp.slist = set_headers(rp.easy_handle, headers)
     set_interface(rp.easy_handle, interface)
     set_timeout(rp.easy_handle, read_timeout)
     set_ssl(rp.easy_handle)
     set_follow_location(rp.easy_handle)
 
-    if lowercase(method) == "post"
+    method = lowercase(method)
+    if method == "post"
         set_body(rp.easy_handle, body)
-    elseif lowercase(method) == "put"
+    elseif method == "put"
         set_body(rp.easy_handle, body)
         set_put(rp.easy_handle)
-    elseif lowercase(method)== "delete"
+    elseif method == "delete"
         set_delete(rp.easy_handle, body)
-    elseif lowercase(method) == "get"
+    elseif method == "get"
         # nothing
     else
-        error("HttpClient: unsupported method")
+        error("Unsupported method \'$method\'.")
     end
 
     perform(rp, read_timeout, retries)
 
     http_code = get_http_code(rp.easy_handle)
     response_string = response_as_string(response)
+    headers = get_headers(rp.easy_handle)
 
     if status_exception && http_code >= 300
         error(
-            "StatusError: ", http_code, 
-            ". Full url: ", full_url,
-            ". Response: ", response_string
+            "StatusError: ", http_code, ". ",
+            "Full url: ", full_url, ". ",
+            "Response: \"\"\"", response_string, "\"\"\""
         )
     end
 
-    headers = get_headers(rp.easy_handle)
-
-    Request(full_url, response_string, http_code, headers)
+    return Request(full_url, response_string, http_code, headers)
 end

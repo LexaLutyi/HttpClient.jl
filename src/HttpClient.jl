@@ -3,17 +3,16 @@ module HttpClient
 using CodecZlib
 using LibCURL2
 
-include("curl_error.jl")
-include("request_pointers.jl")
+const Header = Pair{String,String}
 
+include("curl_error.jl")
+
+include("request_pointers.jl")
 include("response.jl")
-include("header.jl")
 include("query.jl")
-include("interface.jl")
-include("timeout.jl")
-include("body.jl")
-include("ssl.jl")
+
 include("set_options.jl")
+include("get_options.jl")
 
 include("perform.jl")
 
