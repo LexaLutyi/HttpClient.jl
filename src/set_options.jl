@@ -67,6 +67,8 @@ end
 
 "Use nothing over empty string."
 function set_interface(easy_handle, interface::String)
+    # Empty string as interface doesn't work on macos.
+    interface == "" && @warn "Do not use empty string as interface, use nothing."
     @curlok curl_easy_setopt(easy_handle, CURLOPT_INTERFACE, interface)
     return nothing
 end
