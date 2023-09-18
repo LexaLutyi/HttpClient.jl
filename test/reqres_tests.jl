@@ -6,7 +6,7 @@ const Header = Pair{String, String}
     url::String
     headers::Vector{Header} = Header[]
     query::Query = nothing
-    interface::String = nothing
+    interface::Union{String, Nothing} = nothing
     read_timeout::Int = 0
     retries::Int = 0
     body::Body = nothing
