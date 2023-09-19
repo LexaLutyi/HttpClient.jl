@@ -15,9 +15,9 @@ add HttpClient
 
 Чтобы не устанавливать Registy, следует установить пакет и зависимости через git.
 ```julia-repl
-add https://github.com/LexaLutyi/LibCURL2_jll.jl.git
-add https://github.com/LexaLutyi/LibCURL2.jl.git
-add https://github.com/LexaLutyi/HttpClient.jl.git
+add https://github.com/LexaLutyi/LibCURL2_jll.jl.git#LibCURL2-v7.88.1+4
+add https://github.com/LexaLutyi/LibCURL2.jl.git#a798fd2853a3b765ec134f3b9f98635e6ec2b256
+add https://github.com/LexaLutyi/HttpClient.jl
 ```
 
 
