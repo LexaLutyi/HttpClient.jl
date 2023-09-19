@@ -189,7 +189,7 @@ function send(connection, message::Vector{UInt8}=UInt8[]; flags = CURLWS_BINARY)
 
     if result != CURLE_OK
         connection.isopen = false
-        raise_curl_error(result, connection.error_buffer)
+        error(join_messages(result, connection.error_buffer))
     end
     return true
 end
@@ -217,7 +217,7 @@ function recv_one_frame(connection)
 
     if result != CURLE_OK
         connection.isopen = false
-        raise_curl_error(result, connection.error_buffer)
+        error(join_messages(result, connection.error_buffer))
     end
 
     message = GC.@preserve buffer unsafe_string(pointer(buffer), received[])

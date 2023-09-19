@@ -94,7 +94,7 @@ end
         data, message_type = HttpClient.receive_any(connection)
         @test message_type == "pong"
         @test data == "foo"
-        
+
         sleep(1)
         HttpClient.send(connection, ping_body)
         data, message_type = HttpClient.receive_any(connection)
@@ -105,7 +105,7 @@ end
 
 @testset "per message deflate" begin
     headers = [
-        "User-Agent" => "http-julia", 
+        "User-Agent" => "http-julia",
         "sec-websocket-extensions" => "permessage-deflate"
     ]
     HttpClient.websocket(
@@ -177,6 +177,20 @@ end
         interface = "0.0.0.0",
         proxy = ""
     )
+end
+
+
+@testset "Raise error" begin
+    HttpClient.websocket(url_binance_stream) do connection
+        @test_throws "Failed sending data to the peer" begin
+            while isopen(connection)
+                HttpClient.send_ping(connection)
+            end
+        end
+        @test_throws "Failure when receiving data from the peer" begin
+            HttpClient.receive(connection)
+        end
+    end
 end
 
 
