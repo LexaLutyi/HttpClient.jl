@@ -3,8 +3,16 @@
 <!-- [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://LexaLutyi.github.io/HttpClient.jl/stable/) -->
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://LexaLutyi.github.io/HttpClient.jl/dev/)
 [![Build Status](https://github.com/LexaLutyi/HttpClient.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/LexaLutyi/HttpClient.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
 # Установка
+Установить через Registry:
+```julia-repl
+registry add https://github.com/LexaLutyi/MyJuliaRegistry.git
+add HttpClient
+```
+
+
 Чтобы не устанавливать Registy, следует установить пакет и зависимости через git.
 ```julia-repl
 add https://github.com/LexaLutyi/LibCURL2_jll.jl.git
@@ -20,7 +28,7 @@ add https://github.com/LexaLutyi/HttpClient.jl.git
   - [Julia Download](https://julialang.org/downloads/)
   - [Julia Documentation](https://docs.julialang.org/en/v1/)
   - [Julia Packages](https://juliapackages.com/)
-  - [Blue Style](https://github.com/invenia/BlueStyle) 
+  - [Blue Style](https://github.com/invenia/BlueStyle)
 
 ### Описание
 
@@ -86,15 +94,15 @@ julia> String(req.body)
 {
   "args": {
     "echo": "你好嗎"
-  }, 
+  },
   "headers": {
-    "Accept": "*/*", 
-    "Content-Type": "application/json", 
-    "Host": "httpbin.org", 
-    "User-Agent": "http-julia", 
+    "Accept": "*/*",
+    "Content-Type": "application/json",
+    "Host": "httpbin.org",
+    "User-Agent": "http-julia",
     "X-Amzn-Trace-Id": "Root=1-6478428f-4790f09856daac6d73ebf5c0"
-  }, 
-  "origin": "100.187.179.40", 
+  },
+  "origin": "100.187.179.40",
   "url": "http://httpbin.org/get?echo=你好嗎"
 }
 
@@ -181,18 +189,18 @@ function handle(connection::Connection{Socket})
     while !eof(connection)
         try
             msg::Vector{UInt8} = recv(connection)
-            # handle message 
+            # handle message
             send(connection, "hi")
         catch e
             #...
-        end 
+        end
     end
 end
 
 function handle(connection::Connection{Http})
     try
         msg::Vector{UInt8} = http_recv(connection)
-        # handle message 
+        # handle message
         http_status(connection, 300)
         http_header(connection, "300")
         http_send(connection, "referrer-policy", "origin-when-cross-origin")
