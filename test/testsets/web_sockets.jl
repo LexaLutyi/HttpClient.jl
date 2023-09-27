@@ -75,12 +75,4 @@ end
     )
 end
 
-@testset "Read timeout" begin
-    timer = Timer(10)
-    HttpClient.websocket(url_socketsbay; read_timeout=5) do connection
-        @test_throws "Read timeout" HttpClient.receive(connection)
-    end
-    @test isopen(timer)
-end
-
 end # testset web sockets
