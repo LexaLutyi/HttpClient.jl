@@ -23,7 +23,8 @@ end
     include("testsets/delete.jl")
     include("testsets/put.jl")
     include("testsets/async.jl")
+    include("testsets/web_sockets.jl")
 
     # ! Binance tests don't work in git CI.
-    # include("testsets/web_sockets.jl")
+    # include("testsets/web_sockets binance.jl")
 end

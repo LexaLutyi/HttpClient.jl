@@ -22,6 +22,7 @@ end
     isopen::Bool = false
     error_buffer::Vector{UInt8} = zeros(UInt8, CURL_ERROR_SIZE)
     isdeflate::Bool = false
+    read_timeout::Real = 60
 end
 
 """
@@ -71,6 +72,7 @@ function open_connection(url::AbstractString;
     query = nothing,
     interface::Union{String,Nothing} = nothing,
     connect_timeout = 60,
+    read_timeout = 60,
     proxy::Union{String,Nothing} = nothing,
     verbose = false,
     isdeflate = false
@@ -100,7 +102,7 @@ function open_connection(url::AbstractString;
     # if not reset, then connection will be broken after connect_timeout seconds
     set_timeout(rp.easy_handle, 0)
 
-    return Connection(rp, full_url, true, error_buffer, isdeflate)
+    return Connection(rp, full_url, true, error_buffer, isdeflate, read_timeout)
 end
 
 """
@@ -133,7 +135,7 @@ function websocket(handle, url::AbstractString;
     query = nothing,
     interface::Union{String,Nothing} = nothing,
     connect_timeout::Real = 60,
-    read_timeout::Real = 300,
+    read_timeout::Real = 60,
     proxy::Union{String,Nothing} = nothing,
     verbose::Bool = false,
     isdeflate::Bool = false
@@ -143,6 +145,7 @@ function websocket(handle, url::AbstractString;
         query,
         interface,
         connect_timeout,
+        read_timeout,
         proxy,
         verbose,
         isdeflate
@@ -199,20 +202,24 @@ function send(connection, message::AbstractString; flags=CURLWS_TEXT)
 end
 
 function recv_one_frame(connection)
+    read_timer = Timer(connection.read_timeout)
     easy_handle = connection.pointers.easy_handle
 
     received = Ref{Csize_t}(0)
     meta_ptr = [Ptr{curl_ws_frame}(0)]
     buffer_size = 256
     buffer = zeros(UInt8, buffer_size)
+    yield()
     result = curl_ws_recv(easy_handle, buffer, buffer_size, received, meta_ptr)
-
-    # Socket not ready for send/recv. Try again.
-    if result == CURLE_AGAIN
+    while result == CURLE_AGAIN
+        if !isopen(read_timer)
+            error("Read timeout is reached")
+        end
         sleep_dt = 0.01
         @debug curl_code_to_string(result) sleep_dt
         sleep(sleep_dt)
-        return recv_one_frame(connection)
+        yield()
+        result = curl_ws_recv(easy_handle, buffer, buffer_size, received, meta_ptr)
     end
 
     if result != CURLE_OK
@@ -234,7 +241,6 @@ Possible message types are text, binary, ping, pong, close, missing.
 User is responsible for handling control messages.
 """
 function receive_any(connection)
-    yield()
     full_message, frame = recv_one_frame(connection)
     while frame.bytesleft > 0
         message, frame = recv_one_frame(connection)
